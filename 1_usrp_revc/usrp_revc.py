@@ -10,8 +10,11 @@
 
 from PyQt5 import Qt
 from gnuradio import qtgui
-from gnuradio import gr
+from gnuradio import analog
+import math
+from gnuradio import filter
 from gnuradio.filter import firdes
+from gnuradio import gr
 from gnuradio.fft import window
 import sys
 import signal
@@ -62,15 +65,31 @@ class usrp_revc(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 1e6
+        self.f_xosc_Hz = f_xosc_Hz = 26e6
+        self.dev_mantissa = dev_mantissa = 7
+        self.dev_exp = dev_exp = 4
+        self.trigger_offset = trigger_offset = 0
+        self.samp_rate = samp_rate = 2e6
         self.gain_db = gain_db = 10
-        self.freq_center = freq_center = 433e6
+        self.fsk_deviation_Hz = fsk_deviation_Hz = (f_xosc_Hz / 2**17) * (8 + dev_mantissa) * 2**dev_exp
+        self.f_center_Hz = f_center_Hz = 433e6
         self.bandwidth = bandwidth = 1e6
 
         ##################################################
         # Blocks
         ##################################################
 
+        if "int" == "int":
+        	isFloat = False
+        	scaleFactor = 1
+        else:
+        	isFloat = True
+        	scaleFactor = 1
+
+        _trigger_offset_dial_control = qtgui.GrDialControl('', self, 0,(1024 * 2),0,"default",self.set_trigger_offset,isFloat, scaleFactor, 100, False, "'value'")
+        self.trigger_offset = _trigger_offset_dial_control
+
+        self.top_layout.addWidget(_trigger_offset_dial_control)
         self.uhd_usrp_source_0 = uhd.usrp_source(
             ",".join(("", '')),
             uhd.stream_args(
@@ -82,34 +101,72 @@ class usrp_revc(gr.top_block, Qt.QWidget):
         self.uhd_usrp_source_0.set_samp_rate(samp_rate)
         self.uhd_usrp_source_0.set_time_unknown_pps(uhd.time_spec(0))
 
-        self.uhd_usrp_source_0.set_center_freq(freq_center, 0)
+        self.uhd_usrp_source_0.set_center_freq(f_center_Hz, 0)
         self.uhd_usrp_source_0.set_antenna("RX2", 0)
         self.uhd_usrp_source_0.set_bandwidth(samp_rate, 0)
         self.uhd_usrp_source_0.set_gain(gain_db, 0)
-        self.qtgui_sink_x_0 = qtgui.sink_c(
-            1024, #fftsize
-            window.WIN_BLACKMAN_hARRIS, #wintype
-            freq_center, #fc
-            bandwidth, #bw
-            "USRP Check", #name
-            True, #plotfreq
-            True, #plotwaterfall
-            True, #plottime
-            True, #plotconst
+        self.rational_resampler_xxx_0 = filter.rational_resampler_fff(
+                interpolation=1,
+                decimation=100,
+                taps=[],
+                fractional_bw=0)
+        self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
+            4096, #size
+            samp_rate, #samp_rate
+            "", #name
+            1, #number of inputs
             None # parent
         )
-        self.qtgui_sink_x_0.set_update_time(1.0/10)
-        self._qtgui_sink_x_0_win = sip.wrapinstance(self.qtgui_sink_x_0.qwidget(), Qt.QWidget)
+        self.qtgui_time_sink_x_0.set_update_time(0.10)
+        self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
 
-        self.qtgui_sink_x_0.enable_rf_freq(False)
+        self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
-        self.top_layout.addWidget(self._qtgui_sink_x_0_win)
+        self.qtgui_time_sink_x_0.enable_tags(True)
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_NORM, qtgui.TRIG_SLOPE_POS, 0.0, trigger_offset, 0, "")
+        self.qtgui_time_sink_x_0.enable_autoscale(False)
+        self.qtgui_time_sink_x_0.enable_grid(False)
+        self.qtgui_time_sink_x_0.enable_axis_labels(True)
+        self.qtgui_time_sink_x_0.enable_control_panel(True)
+        self.qtgui_time_sink_x_0.enable_stem_plot(False)
+
+
+        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
+            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ['blue', 'red', 'green', 'black', 'cyan',
+            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
+        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0]
+        styles = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        markers = [-1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1]
+
+
+        for i in range(1):
+            if len(labels[i]) == 0:
+                self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_time_sink_x_0.set_line_label(i, labels[i])
+            self.qtgui_time_sink_x_0.set_line_width(i, widths[i])
+            self.qtgui_time_sink_x_0.set_line_color(i, colors[i])
+            self.qtgui_time_sink_x_0.set_line_style(i, styles[i])
+            self.qtgui_time_sink_x_0.set_line_marker(i, markers[i])
+            self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
+
+        self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf((samp_rate/(2*math.pi*fsk_deviation_Hz)))
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.uhd_usrp_source_0, 0), (self.qtgui_sink_x_0, 0))
+        self.connect((self.analog_quadrature_demod_cf_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.qtgui_time_sink_x_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.analog_quadrature_demod_cf_0, 0))
 
 
     def closeEvent(self, event):
@@ -120,11 +177,41 @@ class usrp_revc(gr.top_block, Qt.QWidget):
 
         event.accept()
 
+    def get_f_xosc_Hz(self):
+        return self.f_xosc_Hz
+
+    def set_f_xosc_Hz(self, f_xosc_Hz):
+        self.f_xosc_Hz = f_xosc_Hz
+        self.set_fsk_deviation_Hz((self.f_xosc_Hz / 2**17) * (8 + self.dev_mantissa) * 2**self.dev_exp)
+
+    def get_dev_mantissa(self):
+        return self.dev_mantissa
+
+    def set_dev_mantissa(self, dev_mantissa):
+        self.dev_mantissa = dev_mantissa
+        self.set_fsk_deviation_Hz((self.f_xosc_Hz / 2**17) * (8 + self.dev_mantissa) * 2**self.dev_exp)
+
+    def get_dev_exp(self):
+        return self.dev_exp
+
+    def set_dev_exp(self, dev_exp):
+        self.dev_exp = dev_exp
+        self.set_fsk_deviation_Hz((self.f_xosc_Hz / 2**17) * (8 + self.dev_mantissa) * 2**self.dev_exp)
+
+    def get_trigger_offset(self):
+        return self.trigger_offset
+
+    def set_trigger_offset(self, trigger_offset):
+        self.trigger_offset = trigger_offset
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_NORM, qtgui.TRIG_SLOPE_POS, 0.0, self.trigger_offset, 0, "")
+
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
+        self.analog_quadrature_demod_cf_0.set_gain((self.samp_rate/(2*math.pi*self.fsk_deviation_Hz)))
+        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
 
@@ -135,20 +222,25 @@ class usrp_revc(gr.top_block, Qt.QWidget):
         self.gain_db = gain_db
         self.uhd_usrp_source_0.set_gain(self.gain_db, 0)
 
-    def get_freq_center(self):
-        return self.freq_center
+    def get_fsk_deviation_Hz(self):
+        return self.fsk_deviation_Hz
 
-    def set_freq_center(self, freq_center):
-        self.freq_center = freq_center
-        self.qtgui_sink_x_0.set_frequency_range(self.freq_center, self.bandwidth)
-        self.uhd_usrp_source_0.set_center_freq(self.freq_center, 0)
+    def set_fsk_deviation_Hz(self, fsk_deviation_Hz):
+        self.fsk_deviation_Hz = fsk_deviation_Hz
+        self.analog_quadrature_demod_cf_0.set_gain((self.samp_rate/(2*math.pi*self.fsk_deviation_Hz)))
+
+    def get_f_center_Hz(self):
+        return self.f_center_Hz
+
+    def set_f_center_Hz(self, f_center_Hz):
+        self.f_center_Hz = f_center_Hz
+        self.uhd_usrp_source_0.set_center_freq(self.f_center_Hz, 0)
 
     def get_bandwidth(self):
         return self.bandwidth
 
     def set_bandwidth(self, bandwidth):
         self.bandwidth = bandwidth
-        self.qtgui_sink_x_0.set_frequency_range(self.freq_center, self.bandwidth)
 
 
 
