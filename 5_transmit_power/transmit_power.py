@@ -67,7 +67,7 @@ class transmit_power(gr.top_block, Qt.QWidget):
         self.f_xosc_Hz = f_xosc_Hz = 26e6
         self.dev_mantissa = dev_mantissa = 7
         self.dev_exp = dev_exp = 4
-        self.samp_rate = samp_rate = 2e6
+        self.samp_rate = samp_rate = 1e6
         self.gain_db = gain_db = 10
         self.fsk_deviation_Hz = fsk_deviation_Hz = (f_xosc_Hz / 2**17) * (8 + dev_mantissa) * 2**dev_exp
         self.f_center_Hz = f_center_Hz = 433.2e6
