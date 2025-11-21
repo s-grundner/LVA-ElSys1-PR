@@ -152,7 +152,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: /home/simon/Dokumente/repos-jku/ElSys-PR/2_usrp_send/gfsk.gnc
+    file: /home/simon/Dokumente/repos-jku/ElSys-PR/2_usrp_send/4-fsk-b3.gnc
     type: float
     unbuffered: 'True'
     vlen: '1'

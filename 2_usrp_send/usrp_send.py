@@ -109,7 +109,7 @@ class usrp_send(gr.top_block, Qt.QWidget):
                 window.WIN_HAMMING,
                 6.76))
         self.blocks_head_0 = blocks.head(gr.sizeof_float*1, (1024*20))
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*1, '/home/simon/Dokumente/repos-jku/ElSys-PR/2_usrp_send/gfsk.gnc', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*1, '/home/simon/Dokumente/repos-jku/ElSys-PR/2_usrp_send/4-fsk-b3.gnc', False)
         self.blocks_file_sink_0.set_unbuffered(True)
         self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf((samp_rate/(2*math.pi*fsk_deviation_Hz)))
 
