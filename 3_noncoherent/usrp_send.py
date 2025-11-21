@@ -5,11 +5,13 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: USRP from CC1101
+# Title: Non Coherent FSK Receiver
 # GNU Radio version: 3.10.12.0
 
 from PyQt5 import Qt
 from gnuradio import qtgui
+from gnuradio import blocks
+from gnuradio import digital
 from gnuradio import filter
 from gnuradio.filter import firdes
 from gnuradio import gr
@@ -30,9 +32,9 @@ import threading
 class usrp_send(gr.top_block, Qt.QWidget):
 
     def __init__(self):
-        gr.top_block.__init__(self, "USRP from CC1101", catch_exceptions=True)
+        gr.top_block.__init__(self, "Non Coherent FSK Receiver", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("USRP from CC1101")
+        self.setWindowTitle("Non Coherent FSK Receiver")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -66,7 +68,7 @@ class usrp_send(gr.top_block, Qt.QWidget):
         self.f_xosc_Hz = f_xosc_Hz = 26e6
         self.dev_mantissa = dev_mantissa = 7
         self.dev_exp = dev_exp = 4
-        self.samp_rate = samp_rate = 2e6
+        self.samp_rate = samp_rate = 1e6
         self.gain_db = gain_db = 10
         self.fsk_deviation_Hz = fsk_deviation_Hz = (f_xosc_Hz / 2**17) * (8 + dev_mantissa) * 2**dev_exp
         self.f_center_Hz = f_center_Hz = 433.2e6
@@ -92,31 +94,66 @@ class usrp_send(gr.top_block, Qt.QWidget):
         self.uhd_usrp_source_0.set_bandwidth(samp_rate, 0)
         self.uhd_usrp_source_0.set_rx_agc(False, 0)
         self.uhd_usrp_source_0.set_gain(gain_db, 0)
-        self.qtgui_sink_x_0_0_0 = qtgui.sink_c(
+        self.qtgui_sink_x_0_0 = qtgui.sink_c(
             1024, #fftsize
             window.WIN_BLACKMAN_hARRIS, #wintype
-            f_center_Hz, #fc
+            0, #fc
             samp_rate, #bw
-            "Passband Filtered", #name
+            "", #name
             True, #plotfreq
             True, #plotwaterfall
             True, #plottime
             True, #plotconst
             None # parent
         )
-        self.qtgui_sink_x_0_0_0.set_update_time(1.0/10)
-        self._qtgui_sink_x_0_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0_0.qwidget(), Qt.QWidget)
+        self.qtgui_sink_x_0_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0.qwidget(), Qt.QWidget)
 
-        self.qtgui_sink_x_0_0_0.enable_rf_freq(False)
+        self.qtgui_sink_x_0_0.enable_rf_freq(False)
 
-        self.top_layout.addWidget(self._qtgui_sink_x_0_0_0_win)
-        self.low_pass_filter_0 = filter.fir_filter_ccf(
+        self.top_layout.addWidget(self._qtgui_sink_x_0_0_win)
+        self.qtgui_sink_x_0 = qtgui.sink_c(
+            1024, #fftsize
+            window.WIN_BLACKMAN_hARRIS, #wintype
+            0, #fc
+            samp_rate, #bw
+            "", #name
+            True, #plotfreq
+            True, #plotwaterfall
+            True, #plottime
+            True, #plotconst
+            None # parent
+        )
+        self.qtgui_sink_x_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_win = sip.wrapinstance(self.qtgui_sink_x_0.qwidget(), Qt.QWidget)
+
+        self.qtgui_sink_x_0.enable_rf_freq(False)
+
+        self.top_layout.addWidget(self._qtgui_sink_x_0_win)
+        self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
+        self.blocks_sub_xx_0 = blocks.sub_ff(1)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_float*1)
+        self.blocks_complex_to_mag_squared_0_0_0 = blocks.complex_to_mag_squared(1)
+        self.blocks_complex_to_mag_squared_0_0 = blocks.complex_to_mag_squared(1)
+        self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
+        self.band_pass_filter_0_0 = filter.fir_filter_ccc(
             1,
-            firdes.low_pass(
+            firdes.complex_band_pass(
                 1,
                 samp_rate,
-                100e3,
-                1000,
+                (-fsk_deviation_Hz/2-5e3),
+                (-fsk_deviation_Hz/2+5e3),
+                500,
+                window.WIN_HAMMING,
+                6.76))
+        self.band_pass_filter_0 = filter.fir_filter_ccc(
+            1,
+            firdes.complex_band_pass(
+                1,
+                samp_rate,
+                (18000-5e3),
+                (18000+5e3),
+                500,
                 window.WIN_HAMMING,
                 6.76))
 
@@ -124,8 +161,17 @@ class usrp_send(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.low_pass_filter_0, 0), (self.qtgui_sink_x_0_0_0, 0))
-        self.connect((self.uhd_usrp_source_0, 0), (self.low_pass_filter_0, 0))
+        self.connect((self.band_pass_filter_0, 0), (self.blocks_complex_to_mag_squared_0_0, 0))
+        self.connect((self.band_pass_filter_0, 0), (self.qtgui_sink_x_0, 0))
+        self.connect((self.band_pass_filter_0_0, 0), (self.blocks_complex_to_mag_squared_0_0_0, 0))
+        self.connect((self.band_pass_filter_0_0, 0), (self.qtgui_sink_x_0_0, 0))
+        self.connect((self.blocks_char_to_float_0, 0), (self.blocks_null_sink_0, 0))
+        self.connect((self.blocks_complex_to_mag_squared_0_0, 0), (self.blocks_sub_xx_0, 1))
+        self.connect((self.blocks_complex_to_mag_squared_0_0_0, 0), (self.blocks_sub_xx_0, 0))
+        self.connect((self.blocks_sub_xx_0, 0), (self.digital_binary_slicer_fb_0, 0))
+        self.connect((self.digital_binary_slicer_fb_0, 0), (self.blocks_char_to_float_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.band_pass_filter_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.band_pass_filter_0_0, 0))
 
 
     def closeEvent(self, event):
@@ -162,10 +208,12 @@ class usrp_send(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, 100e3, 1000, window.WIN_HAMMING, 6.76))
-        self.qtgui_sink_x_0_0_0.set_frequency_range(self.f_center_Hz, self.samp_rate)
+        self.band_pass_filter_0.set_taps(firdes.complex_band_pass(1, self.samp_rate, (18000-5e3), (18000+5e3), 500, window.WIN_HAMMING, 6.76))
+        self.band_pass_filter_0_0.set_taps(firdes.complex_band_pass(1, self.samp_rate, (-self.fsk_deviation_Hz/2-5e3), (-self.fsk_deviation_Hz/2+5e3), 500, window.WIN_HAMMING, 6.76))
+        self.qtgui_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
+        self.qtgui_sink_x_0_0.set_frequency_range(0, self.samp_rate)
 
     def get_gain_db(self):
         return self.gain_db
@@ -179,13 +227,13 @@ class usrp_send(gr.top_block, Qt.QWidget):
 
     def set_fsk_deviation_Hz(self, fsk_deviation_Hz):
         self.fsk_deviation_Hz = fsk_deviation_Hz
+        self.band_pass_filter_0_0.set_taps(firdes.complex_band_pass(1, self.samp_rate, (-self.fsk_deviation_Hz/2-5e3), (-self.fsk_deviation_Hz/2+5e3), 500, window.WIN_HAMMING, 6.76))
 
     def get_f_center_Hz(self):
         return self.f_center_Hz
 
     def set_f_center_Hz(self, f_center_Hz):
         self.f_center_Hz = f_center_Hz
-        self.qtgui_sink_x_0_0_0.set_frequency_range(self.f_center_Hz, self.samp_rate)
         self.uhd_usrp_source_0.set_center_freq(self.f_center_Hz, 0)
 
     def get_bandwidth(self):
