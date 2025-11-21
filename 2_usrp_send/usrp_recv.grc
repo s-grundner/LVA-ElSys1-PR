@@ -152,7 +152,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: /home/simon/Dokumente/repos-jku/ElSys-PR/2_usrp_send/bits.gnc
+    file: /home/simon/Dokumente/repos-jku/ElSys-PR/2_usrp_send/gfsk.gnc
     type: float
     unbuffered: 'True'
     vlen: '1'
@@ -188,7 +188,7 @@ blocks:
     alias: ''
     beta: '6.76'
     comment: ''
-    cutoff_freq: 200e3
+    cutoff_freq: 100e3
     decim: '1'
     gain: '1'
     interp: '1'
@@ -377,7 +377,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [944, 208.0]
+    coordinate: [936, 208.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
@@ -754,7 +754,7 @@ blocks:
     nchan: '1'
     num_mboards: '1'
     otw: ''
-    rx_agc0: Default
+    rx_agc0: Disabled
     rx_agc1: Default
     rx_agc10: Default
     rx_agc11: Default

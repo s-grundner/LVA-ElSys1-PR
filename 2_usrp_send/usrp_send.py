@@ -92,6 +92,7 @@ class usrp_send(gr.top_block, Qt.QWidget):
         self.uhd_usrp_source_0.set_center_freq(f_center_Hz, 0)
         self.uhd_usrp_source_0.set_antenna("RX2", 0)
         self.uhd_usrp_source_0.set_bandwidth(samp_rate, 0)
+        self.uhd_usrp_source_0.set_rx_agc(False, 0)
         self.uhd_usrp_source_0.set_gain(gain_db, 0)
         self.rational_resampler_xxx_0 = filter.rational_resampler_fff(
                 interpolation=1,
@@ -103,12 +104,12 @@ class usrp_send(gr.top_block, Qt.QWidget):
             firdes.low_pass(
                 1,
                 samp_rate,
-                200e3,
+                100e3,
                 1000,
                 window.WIN_HAMMING,
                 6.76))
         self.blocks_head_0 = blocks.head(gr.sizeof_float*1, (1024*20))
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*1, '/home/simon/Dokumente/repos-jku/ElSys-PR/2_usrp_send/bits.gnc', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*1, '/home/simon/Dokumente/repos-jku/ElSys-PR/2_usrp_send/gfsk.gnc', False)
         self.blocks_file_sink_0.set_unbuffered(True)
         self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf((samp_rate/(2*math.pi*fsk_deviation_Hz)))
 
@@ -158,7 +159,7 @@ class usrp_send(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.analog_quadrature_demod_cf_0.set_gain((self.samp_rate/(2*math.pi*self.fsk_deviation_Hz)))
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, 200e3, 1000, window.WIN_HAMMING, 6.76))
+        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, 100e3, 1000, window.WIN_HAMMING, 6.76))
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
 
