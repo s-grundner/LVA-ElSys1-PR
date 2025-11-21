@@ -1,0 +1,7 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {section}{\numberline {1}Task:}{3}{section.1}%
+\contentsline {section}{\numberline {2}Task:}{4}{section.2}%
+\contentsline {section}{\numberline {3}Task:}{5}{section.3}%
+\contentsline {section}{\numberline {4}Task:}{6}{section.4}%
+\contentsline {section}{\numberline {5}Task:}{7}{section.5}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
