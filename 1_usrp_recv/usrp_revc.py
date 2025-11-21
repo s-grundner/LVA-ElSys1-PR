@@ -100,7 +100,7 @@ class usrp_revc(gr.top_block, Qt.QWidget):
                 fractional_bw=0)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
             2048, #size
-            samp_rate, #samp_rate
+            samp_rate/100, #samp_rate
             "", #name
             1, #number of inputs
             None # parent
@@ -146,6 +146,24 @@ class usrp_revc(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        self.qtgui_sink_x_0_0 = qtgui.sink_c(
+            1024, #fftsize
+            window.WIN_BLACKMAN_hARRIS, #wintype
+            f_center_Hz, #fc
+            samp_rate, #bw
+            "Passband", #name
+            True, #plotfreq
+            True, #plotwaterfall
+            True, #plottime
+            True, #plotconst
+            None # parent
+        )
+        self.qtgui_sink_x_0_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0.qwidget(), Qt.QWidget)
+
+        self.qtgui_sink_x_0_0.enable_rf_freq(False)
+
+        self.top_layout.addWidget(self._qtgui_sink_x_0_0_win)
         self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf((samp_rate/(2*math.pi*fsk_deviation_Hz)))
 
 
@@ -155,6 +173,7 @@ class usrp_revc(gr.top_block, Qt.QWidget):
         self.connect((self.analog_quadrature_demod_cf_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.uhd_usrp_source_0, 0), (self.analog_quadrature_demod_cf_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.qtgui_sink_x_0_0, 0))
 
 
     def closeEvent(self, event):
@@ -192,7 +211,8 @@ class usrp_revc(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.analog_quadrature_demod_cf_0.set_gain((self.samp_rate/(2*math.pi*self.fsk_deviation_Hz)))
-        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
+        self.qtgui_sink_x_0_0.set_frequency_range(self.f_center_Hz, self.samp_rate)
+        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate/100)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
 
@@ -215,6 +235,7 @@ class usrp_revc(gr.top_block, Qt.QWidget):
 
     def set_f_center_Hz(self, f_center_Hz):
         self.f_center_Hz = f_center_Hz
+        self.qtgui_sink_x_0_0.set_frequency_range(self.f_center_Hz, self.samp_rate)
         self.uhd_usrp_source_0.set_center_freq(self.f_center_Hz, 0)
 
     def get_bandwidth(self):

@@ -209,7 +209,7 @@ blocks:
     bus_structure: null
     coordinate: [520, 352.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -266,7 +266,7 @@ blocks:
     name: '""'
     nconnections: '1'
     size: '2048'
-    srate: samp_rate
+    srate: samp_rate/100
     stemplot: 'False'
     style1: '1'
     style10: '1'
