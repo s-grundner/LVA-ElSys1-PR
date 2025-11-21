@@ -68,7 +68,6 @@ class usrp_revc(gr.top_block, Qt.QWidget):
         self.f_xosc_Hz = f_xosc_Hz = 26e6
         self.dev_mantissa = dev_mantissa = 7
         self.dev_exp = dev_exp = 4
-        self.trigger_offset = trigger_offset = 0
         self.samp_rate = samp_rate = 2e6
         self.gain_db = gain_db = 10
         self.fsk_deviation_Hz = fsk_deviation_Hz = (f_xosc_Hz / 2**17) * (8 + dev_mantissa) * 2**dev_exp
@@ -79,17 +78,6 @@ class usrp_revc(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
 
-        if "int" == "int":
-        	isFloat = False
-        	scaleFactor = 1
-        else:
-        	isFloat = True
-        	scaleFactor = 1
-
-        _trigger_offset_dial_control = qtgui.GrDialControl('', self, 0,(1024 * 2),0,"default",self.set_trigger_offset,isFloat, scaleFactor, 100, False, "'value'")
-        self.trigger_offset = _trigger_offset_dial_control
-
-        self.top_layout.addWidget(_trigger_offset_dial_control)
         self.uhd_usrp_source_0 = uhd.usrp_source(
             ",".join(("", '')),
             uhd.stream_args(
@@ -111,7 +99,7 @@ class usrp_revc(gr.top_block, Qt.QWidget):
                 taps=[],
                 fractional_bw=0)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
-            4096, #size
+            2048, #size
             samp_rate, #samp_rate
             "", #name
             1, #number of inputs
@@ -123,7 +111,7 @@ class usrp_revc(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
         self.qtgui_time_sink_x_0.enable_tags(True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_NORM, qtgui.TRIG_SLOPE_POS, 0.0, trigger_offset, 0, "")
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_NORM, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
         self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(False)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
@@ -197,13 +185,6 @@ class usrp_revc(gr.top_block, Qt.QWidget):
     def set_dev_exp(self, dev_exp):
         self.dev_exp = dev_exp
         self.set_fsk_deviation_Hz((self.f_xosc_Hz / 2**17) * (8 + self.dev_mantissa) * 2**self.dev_exp)
-
-    def get_trigger_offset(self):
-        return self.trigger_offset
-
-    def set_trigger_offset(self, trigger_offset):
-        self.trigger_offset = trigger_offset
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_NORM, qtgui.TRIG_SLOPE_POS, 0.0, self.trigger_offset, 0, "")
 
     def get_samp_rate(self):
         return self.samp_rate
