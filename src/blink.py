@@ -1,10 +1,11 @@
 from umachine import Pin
 import time
 import umachine
-umachine.freq(int(50e6)) # reduce power consumption
 
-led_num = 1 # 1...9
-seg1 = PIN(f'LED{led_num}', Pin.OUT)
+umachine.freq(int(50e6))  # reduce power consumption
+
+led_num = 1  # 1...9
+seg1 = Pin(f"LED{led_num}", Pin.OUT)
 
 while True:
     seg1.on()
