@@ -1,25 +1,152 @@
 \newpage
-\section{Task: }
+\section{FSK-Transmitter}
 
-\begin{itemize}[noitemsep]
-    \item Kurze Beschreibung der Aufgabenstellung
-    \item Zugeteilter Frequenzkanal
-    \item Beschreibung der Einstellungen des CC1101 Chips mit Hilfe von Code-Snippets, zum Beispiel das Code-Snippet zur Einstellung des Kanals ist wie folgt
-    \begin{itemize}[noitemsep]
-        \item \lstinline!C1101_433.setChannel(10)  # set Channel to 10 (approx. 435 MHz)!
-    \end{itemize}
-    \item Screenshot des GNU Radio Companion Aufbaus 
-    \begin{itemize}[noitemsep]
-        \item Parameter des Tiefpassfilters (warum wurden diese so gewählt?)
-    \end{itemize}
-    \item Analyse des empfangenen Signals im Zeitbereich für 2-FSK, 4-FSK und GFSK
-    \begin{itemize}[noitemsep]
-        \item Grafische Darstellung der gefilterten und nicht-gefilterten Signale
-        \item Interpretation der Ergebnisse (z.B. Unterschied FSK und GFSK)
-    \end{itemize}
-    \item Analyse des empfangenen Signals im Frequenzbereich für 2-FSK, 4-FSK und GFSK
-    \begin{itemize}[noitemsep]
-        \item Grafische Darstellung des gefilterten und nicht-gefilterten Signals
-        \item Interpretation der Ergebnisse
-    \end{itemize}
-\end{itemize}
+% \begin{itemize}[noitemsep]
+%     \item Kurze Beschreibung der Aufgabenstellung
+%     \item Zugeteilter Frequenzkanal
+%     \item Beschreibung der Einstellungen des CC1101 Chips mit Hilfe von Code-Snippets, zum Beispiel das Code-Snippet zur Einstellung des Kanals ist wie folgt
+%     \begin{itemize}[noitemsep]
+%         \item \lstinline!C1101_433.setChannel(10)  # set Channel to 10 (approx. 435 MHz)!
+%     \end{itemize}
+%     \item Screenshot des GNU Radio Companion Aufbaus
+%     \begin{itemize}[noitemsep]
+%         \item Parameter des Tiefpassfilters (warum wurden diese so gewählt?)
+%     \end{itemize}
+%     \item Analyse des empfangenen Signals im Zeitbereich für 2-FSK, 4-FSK und GFSK
+%     \begin{itemize}[noitemsep]
+%         \item Grafische Darstellung der gefilterten und nicht-gefilterten Signale
+%         \item Interpretation der Ergebnisse (z.B. Unterschied FSK und GFSK)
+%     \end{itemize}
+%     \item Analyse des empfangenen Signals im Frequenzbereich für 2-FSK, 4-FSK und GFSK
+%     \begin{itemize}[noitemsep]
+%         \item Grafische Darstellung des gefilterten und nicht-gefilterten Signals
+%         \item Interpretation der Ergebnisse
+%     \end{itemize}
+% \end{itemize}
+
+Es soll mit dem CC1101 Transciever am eLITe-Board ein Sender aufgesetzt werden, der mit verschiedenen FSK Modulationsarten (2-FSK, 4-FSK und GFSK) Daten auf einem zugeteilten Frequenzkanal sendet. Das Signal wird dann mit dem USRP Empfangen und wie in \autoref{sec:task1} demoduliert und ausgewertet.
+
+\subsection{Kanalzuteilung}
+
+Der Zugeteilte Kanal ist \emph{Kanal 1}. Jeder Kanal hat einen Frequenzabstand von $\SI{200}{\kilo\hertz}$. Mittelfrequenz des Kanals beträgt daher
+\begin{equation*}
+    f_\text{center,1} = f_\text{0} + 200\text{kHz} \cdot \text{Channel} = 433.0\text{MHz} + 200\text{kHz} \cdot 1 = 433.2\text{MHz}
+\end{equation*}
+
+\subsection{Einstellungen des CC1101}
+
+Nach dem Aufsetzten der eLITe Board Peripherien wird der CC1101 Transciever wie folgt konfiguriert:
+\begin{lstlisting}[caption={Einstellungen des CC1101 Transcievers für Task 2}, label={lst:cc1101_task2}]
+CC1101_433.setChannel(1) # Set Channel to 1 (approx. 433.2 MHz) 
+CC1101_433.setBaud(1000) # Set Baudrate to 1000 bps
+CC1101_433.enWhiteData(False)
+CC1101_433.enFEC(False)
+CC1101_433.enCRC(False)
+CC1101_433.setPacketMode("PKT_LEN_FIXED")
+CC1101_433.setPktLen(2)  # 2 Bytes
+CC1101_433.setTXPower(7) # Max Power
+CC1101_433.setSyncWord("0F0F")
+
+MODULATIONS = ["2-FSK", "4-FSK", "GFSK"]
+CC1101_433.setModulation(MODULATIONS[0])
+\end{lstlisting}
+
+Im Anschluss kann ein Datenwort \lstinline!data! definiert werden, welches dann mit \lstinline!CC1101_433.sendData(data)! in einer Schleife gesendet wird. Wurde das Datenwort am Empfänger gemessen, kann die Modulationsart mit \lstinline!CC1101_433.setModulation(MODULATIONS[i])! geändert werden, um die verschiedenen Modulationsarten zu testen.
+
+\newpage
+\subsection{Aufbau in GRC}
+
+Der Aufbau in GRC gleicht dem aus \autoref{sec:task1}, mit dem Unterschied, dass am USRP-Source Block die Mittelfrequenz auf den zugeteilten Kanal eingestellt wurde und ein Tiefpassfilter Block hinzugefügt wurde.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{\usrpSendPath{2_grc.pdf}}
+    \caption{GNU Radio Companion Aufbau für Task 2}
+\end{figure}
+
+Die USRP-Source liefert das Basisband Signal des Kanals um die Frequenz 0 Hz. Der Tiefpassfilter dient dazu, die Anteile der Nachbarkanäle zu entfernen. Die Grenzfrequenz des Filters muss dabei größer sein als die Frequenzabweichung aus \autoref{eq:f_dev} des FSK-Signals. Da die Kanalbreite $\SI{200}{\kilo\hertz}$ beträgt, wird der Tiefpassfilter mit einer Grenzfrequenz von $\SI{100}{\kilo\hertz}$ eingestellt.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.9\textwidth]{\usrpSendPath{2_waterfall_bpf.png}}
+    \caption{Effekt des Tiefpassfilters im Frequenzbereich}
+\end{figure}
+
+\subsection{Analyse im Zeitbereich}
+
+In \autoref{fig:task2_2fsk_gfsk} wird das demodulierte Signal von 2-FSK und GFSK gegenübergestellt. Der Verlauf des Zeitsignals ist durch den \textit{Quadrature Demod} Block direkt proportional zur Phasenänderung des empfangenen Signals. Bei 2-FSK sind steile Übergänge zwischen den Symbolen zu erkennen, da die Frequenz sprunghaft wechselt. Bei GFSK hingegen sind die Übergänge zwischen den Symbolen kontinuierlich und weisen auch kein Überschwingen auf.
+
+\begin{figure}[h]
+    \begin{minipage}[t]{.5\textwidth}
+        \centering
+        \includegraphics[height=4cm]{\usrpSendPath{2fsk-a5-zoom.png}}
+        (a) 2-FSK Signal
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.5\textwidth}
+        \centering
+        \includegraphics[height=4cm]{\usrpSendPath{gfsk-a5-zoom.png}}
+        (b) GFSK Signal
+    \end{minipage}
+    \caption{Vergleich von 2-FSK und GFSK im Zeitbereich}\label{fig:task2_2fsk_gfsk}
+\end{figure}
+
+Bei 4-FKS sind im Zeitbereich vier verschiedene Pegel zu erkennen, welche den vier Symbolen entsprechen. Um alle Symbole zu zeigen, wurden in \autoref{fig:task2_4fsk} zwei verschiedene Datenworte \texttt{0xA5} und \texttt{0xB3} gesendet.
+
+\begin{figure}[h]
+    \begin{minipage}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=4cm]{\usrpSendPath{4fsk-a5-zoom.png}}
+        (a) Datenwort \texttt{0xA5}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.5\textwidth}
+        \centering
+        \includegraphics[height=4cm]{\usrpSendPath{4fsk-b3-zoom.png}}
+        (b) Datenwort \texttt{0xB3}
+    \end{minipage}
+    \caption{4-FSK Signal im Zeitbereich}\label{fig:task2_4fsk}
+\end{figure}
+
+Welche Pegel einem Symbol angehören kann \autoref{tab:modulation_schemes} entnommen werden. Das Erhaltene Signal ist vergleichbar mit dem Beispiel aus dem Datenblatt \autoref{fig:task1_cc1101_frame}.
+
+\begin{table}[h]
+    \centering
+    \caption{Symbolencoding für Verschiedene FSK-Modulationsarten \cite[S.~42, Tab.~29]{TI_CC1101_Datasheet}}
+    \label{tab:modulation_schemes}
+    \begin{tabularx}{\textwidth}{YYY}
+        Format & Symbol & Coding \\ \midrule
+        \multirow{2}{*}{2-FSK/GFSK} & \texttt{'0'} & $-f_\text{dev}$ \\
+        & \texttt{'1'} & $+f_\text{dev}$ \\ \midrule
+        \multirow{4}{*}{4-FSK}
+        & \texttt{'01'} & $-f_\text{dev}$ \\
+        & \texttt{'00'} & $-\frac{1}{3}f_\text{dev}$ \\
+        & \texttt{'10'} & $+\frac{1}{3}f_\text{dev}$ \\
+        & \texttt{'11'} & $+f_\text{dev}$ \\
+    \end{tabularx}
+\end{table}
+
+\newpage
+\subsection{Analyse im Frequenzbereich}
+
+Für 2-FSK sind wie bisher zwei Frequenzkomponenten für die zwei Symbole zu erkennen. Diese Weisen wie in \autoref{tab:modulation_schemes} definierten Frequenzabweichungen $\pm f_\text{dev}$ vom Träger auf.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.6\textwidth]{\usrpSendPath{2_waterfall_2fsk.png}}
+    \caption{Spektrum 2-FSK Signal}
+\end{figure}
+
+Für 4-FSK sind nun mehrere Peaks im Spektrum zu erkennen, da nun auch bis zu 4 Symbole übertragen werden, welche einem Bitmuster gemäß \autoref{tab:modulation_schemes} entsprechen. Die Frequenzkomponenten entsprechen den in \autoref{tab:modulation_schemes} definierten Abweichungen.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.6\textwidth]{\usrpSendPath{2_waterfall_4fsk.png}}
+    \caption{4-FSK Signal}
+\end{figure}
+
+Bei GFSK gibt es ähnlich wie bei 2-FSK nur zwei Frequenzkomponenten. GSFK zeichnet sich dadurch aus, dass die Frequenz nicht sprunghaft umgeschalten wird, sondern einen kontinuierlichen übergang aufweist. Im Zeitverlauf des Spektrums in \autoref{fig:task2_gfsk} kann man erkennen, dass bei einem Symbolwechsel der Peak von $+f_\text{dev}$ nach $-f_\text{dev}$ wandert.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.6\textwidth]{\usrpSendPath{2_waterfall_gfsk.png}}
+    \caption{GFSK Signal}\label{fig:task2_gfsk}
+\end{figure}

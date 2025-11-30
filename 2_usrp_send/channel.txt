@@ -1,1 +1,1 @@
-Channel 1 (422.2 MHz)
+Channel 1 (433.2 MHz)

@@ -42,14 +42,11 @@ CC1101_433.setDefaultValues()
 
 # --- Begin Configure CC1101 ---
 
-# TODO
-CC1101_433.setChannel(11)
+CC1101_433.setChannel(1)
 CC1101_433.setBaud(1000)
 CC1101_433.enWhiteData(False)
 CC1101_433.enFEC(False)
 CC1101_433.enCRC(False)
-#MODULATIONS = ["2-FSK", "4-FSK", "GFSK"] # "ASK"
-#MODULATIONS = ["ASK"]
 CC1101_433.setModulation("ASK")
 CC1101_433.setPacketMode('PKT_LEN_FIXED')
 CC1101_433.setPktLen(2)
@@ -69,7 +66,6 @@ CC1101_433.setPARampingSteps(7)
 # --- Send Data ---
 
 data = [0xB3]
-#CC1101_433.setModulation("GFSK")
 
 while True:
   #  for i in range (10):

@@ -50,7 +50,6 @@ CC1101_433.enWhiteData(False)
 CC1101_433.enFEC(False)
 CC1101_433.enCRC(False)
 MODULATIONS = ["2-FSK", "4-FSK", "GFSK"]  # "ASK"
-# MODULATIONS = ["4-FSK"]
 CC1101_433.setModulation("2-FSK")
 CC1101_433.setPacketMode("PKT_LEN_FIXED")
 CC1101_433.setPktLen(2)
