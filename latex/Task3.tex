@@ -1,21 +1,76 @@
 \newpage
-\section{Task: }
+\section{Nicht-kohärenter 2-FSK-Empfänger}
 
 \begin{itemize}[noitemsep]
     \item Kurze Beschreibung der Aufgabenstellung
-    \item Blockdiagramm des implementierten nicht-kohärenten Empfängers
-    \item Screenshot des GNU Radio Companion Aufbaus 
+    % \item Blockdiagramm des implementierten nicht-kohärenten Empfängers
+    % \item Screenshot des GNU Radio Companion Aufbaus
     \begin{itemize}[noitemsep]
         \item Parameter der Bandpassfilter (warum wurden diese so gewählt?)
     \end{itemize}
     \item Analyse des empfangenen Signals im Zeitbereich
     \begin{itemize}[noitemsep]
-        \item Grafische Darstellung
+        % \item Grafische Darstellung
         \item Interpretation des Ergebnisses 
     \end{itemize}
     \item Analyse des empfangenen Signals im Frequenzbereich
     \begin{itemize}[noitemsep]
-        \item Grafische Darstellung
+        % \item Grafische Darstellung
         \item Interpretation des Ergebnisses
     \end{itemize}
 \end{itemize}
+
+\subsection{Blockschaltbild eines nicht-kohärenten 2-FSK Empfängers}
+
+\begin{figure}[h]
+    \centering
+    \begin{circuitikz}[>=latex']
+        \draw (0,0) node[bareRXantenna](ant){} |- ++(1,-0.5) coordinate (aout) node[circ]{} node[right]{$r[k]\in\mathbb{C}$};
+        \node[above] at (ant.top){USRP};
+        \draw (aout) |- ++(1,1) to[bandpass,>,l=$f_0+f_\text{dev}$]
+            ++(2,0) to[twoport,>,align=center,l={Envelope\\Detector}, t={$(\cdot)^2$}]
+            ++(2,0) -- ++(1,0) coordinate (sum1);
+        \draw (aout) |- ++(1,-1) to[bandpass,>,l_=$f_0-f_\text{dev}$]
+            ++(2,0) to[twoport,>,align=center,t={$(\cdot)^2$}]
+            ++(2,0) -- ++(1,0) coordinate (sum2);
+        \node[adder, scale=0.7](add) at ($(sum1)!0.5!(sum2)$) {};
+        \draw[->] (sum1) -- (add.north) node[pos=0.5, left] {$+$};
+        \draw[->] (sum2) -- (add.south) node[pos=0.5, left] {$-$};
+        \draw[->] (add.east) to[allornothing, align=center, l={Threshold\\Detector}] ++(2,0) node[right] {Bitstream Output};
+    \end{circuitikz}
+    \caption{Blockschaltbild eines nicht-kohärenten FSK Empfängers}
+\end{figure}
+
+Die Mittelfreqenz der Bandpässe wird so gewählt, dass die Frequenzen des \texttt{'1'} Symbol bzw. des \texttt{'0'} Symbols durchgelassen werden. 
+
+\subsection{Aufbau in GRC}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{\noncoherentPath{3_grc.pdf}}
+    \caption{GNU Radio Companion Aufbau für Task 3}
+\end{figure}
+
+\newpage
+\subsection{Analyse im Zeitbereich}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{\noncoherentPath{RecievedBitStream.png}}
+    \caption{Empfangener Bitstream am Ausgang des Demodulators}
+\end{figure}
+
+\newpage
+\subsection{Analyse im Frequenzbereich}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{\noncoherentPath{Baseband.png}}
+    \caption{Empfangenes Signal ohne Filterung}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{\noncoherentPath{Baseband_BPF.png}}
+    \caption{Empfangenes Signal mit Bandpassfilterung}
+\end{figure}
