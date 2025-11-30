@@ -243,7 +243,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2080, 384.0]
+    coordinate: [1200, 392.0]
     rotation: 0
     state: disabled
 - name: blocks_head_0
@@ -261,7 +261,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1896, 400.0]
+    coordinate: [1016, 408.0]
     rotation: 0
     state: disabled
 - name: blocks_null_sink_0
@@ -1105,6 +1105,7 @@ connections:
 - [band_pass_filter_0, '0', qtgui_sink_x_0, '0']
 - [band_pass_filter_0_0, '0', blocks_complex_to_mag_squared_0_0_0, '0']
 - [band_pass_filter_0_0, '0', qtgui_sink_x_0_0, '0']
+- [blocks_char_to_float_0, '0', blocks_head_0, '0']
 - [blocks_char_to_float_0, '0', blocks_null_sink_0, '0']
 - [blocks_char_to_float_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_complex_to_mag_squared_0_0, '0', blocks_sub_xx_0, '1']
