@@ -1,22 +1,135 @@
 \newpage
-\section{Task: }
+\section{Empfangen von FSK-Modulierten Signalen}\label{sec:task1}
+
+% \begin{itemize}[noitemsep]
+%     \item Kurze Beschreibung der Aufgabenstellung
+%     \item Screenshot des GNU Radio Companion Aufbaus
+%     \item Berechnung der Frequenzabweichung
+%     \item Analyse des empfangenen Signals im Zeitbereich
+%     \begin{itemize}[noitemsep]
+%         \item Grafische Darstellung
+%         \item Interpretation des Ergebnisses (z.B. stimmt die berechnete / eingestellte Frequenzabweichung mit der Messung überein)
+%         \item Vergleich mit der Sequenz aus dem Datenblatt (Abb. 2 auf Seite 42)
+%     \end{itemize}
+%     \item Analyse des empfangenen Signals im Frequenzbereich
+%     \begin{itemize}[noitemsep]
+%         \item Grafische Darstellung
+%         \item Interpretation des Ergebnisses
+%     \end{itemize}
+% \end{itemize}
+
+Ein im Labor platziertes eLITe-Board sendet dauerhaft ein 2-FSK moduliertes Signal aus. Dieses Signal soll nun mit dem USRP empfangen werden und in GNU Radio Companion (GRC) demoduliert und ausgewertet werden. Die Einstellungen des Senders sind dabei:
 
 \begin{itemize}[noitemsep]
-    \item Kurze Beschreibung der Aufgabenstellung
-
-    \item Screenshot des GNU Radio Companion Aufbaus
-    
-    \item Berechnung der Frequenzabweichung
-
-    \item Analyse des empfangenen Signals im Zeitbereich
-    \begin{itemize}[noitemsep]
-        \item Grafische Darstellung
-        \item Interpretation des Ergebnisses (z.B. stimmt die berechnete/eingestellte Frequenzabweichung mit der Messung überein)
-        \item Vergleich mit der Sequenz aus dem Datenblatt (Abb. 2 auf Seite 42)
-    \end{itemize}
-    \item Analyse des empfangenen Signals im Frequenzbereich
-    \begin{itemize}[noitemsep]
-        \item Grafische Darstellung
-        \item Interpretation des Ergebnisses
-    \end{itemize}
+    \item $f_\text{osc} = \SI{26}{\mega\hertz}$
+    \item Baudrate: $\SI{1}{\kilo\bit\per\second}$
+    \item Sync Word: \texttt{0x0F0F}
+    \item Frequenzabweichung: Exponent \texttt{0b100}, Mantisse \texttt{0b111} 
+    \item Data Word: \texttt{0xA5}
 \end{itemize}
+
+\subsection{Berechnung der Frequenzabweichung}
+
+Gegeben sind nur die Registerwerte der Konfiguration des CC1101. Die Frequenzabweichung kann mit folgender Formel berechnet werden \cite[S.~42]{TI_CC1101_Datasheet}:
+\begin{equation}
+    f_\text{dev} = \frac{f_\text{xosc}}{2^{17}} (8+\text{DEVIATION\_M})\cdot 2^{\text{DEVIATION\_E}}
+\end{equation}
+Mit den Sender-Einstellungen aus \autoref{sec:task1} ist die Frequenzabweichung:
+\begin{equation}
+    f_\text{dev} = \frac{\SI{26}{\mega\hertz}}{2^{17}} (8+7)\cdot 2^{4} = \SI{47607}{\hertz}\label{eq:f_dev}
+\end{equation}
+
+\subsection{Aufbau in GRC}
+
+Zur demodulation des empfangenen Signals wurde der in \autoref{fig:task1_grc} Aufbau in GNU Radio Companion verwendet. Die zuvor berechnete Frequenzabweichung wird in einer Variable gespeichert, um sie im \textit{Quadrature Demod} Block zu verwenden.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{\usrpRecvPath{1_grc.pdf}}
+    \caption{GNU Radio Companion Aufbau für Task 1}\label{fig:task1_grc}
+\end{figure}
+
+Um das Signal zu demodulieren wurde der \textit{Quadrature Demod} Block
+verwendet. Mit Quadrature Demod wird eine Änderung in der Phase eines
+Komplexen Samples in einen Proportionalen Floatingpoint-Wert umgewandelt. Dabei wird der
+komplexe Abtastwert mit dem konjugiert komplexen vorherigen Abtastwert
+multipliziert, und die Phase Ausgelesen. So kann die Informationstragende Phase
+bzw. Phasenänderung des FSK-Signals wieder extrahiert werden.
+
+Mit einem \textit{Rational Resampler} wird die Abtastrate des Signals um den Faktor $100$ heruntergesetzt, um das Signal in einem größeren Zeitfenster betrachten zu können. Hier ist zu beachten, dass die Abtastrate des \textit{QT GUI Time Sinks} um den selben Faktor reduziert werden muss, damit die Zeitachse korrekt dargestellt wird.
+
+\subsection{Analyse im Zeitbereich}
+
+Das demodulierte Signal im Zeitbereich ist in \autoref{fig:task1_time} dargestellt. Hier ist das Bitmuster der gesendeten Daten zu erkennen. 
+
+\begin{figure}[h]
+    \begin{minipage}[t]{.5\textwidth}
+    \centering
+    \includegraphics[height=4cm]{\usrpRecvPath{1_Bit_correct_time_scale_annotated.png}}
+    \caption{Demoduliertes Zeitsignal}\label{fig:task1_time}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{.5\textwidth}
+    \centering
+    \includegraphics[height=4cm]{\usrpRecvPath{1_Bit_Baudrate.png}}
+    \caption{Baudrate des empfangenen Signals}\label{fig:task1_baudrate}
+    \end{minipage}
+\end{figure}
+
+Aus dem demodulierten Signal können die einzelnen Symbole abgelesen werden. Diese sind in der \autoref{tab:task1_received_data} zusammengefasst.
+
+\begin{table}[h]
+    \centering
+    \caption{Aus dem Messsignal extrahierte Daten}\label{tab:task1_received_data}
+    \begin{tabularx}{\textwidth}{YYY}
+        Präambel & Sync Word & Data Word \\ \midrule
+        \texttt{0xAAAA AAAA} & \texttt{0x0F0F 0F0F} & \texttt{0xA5} \\
+    \end{tabularx}
+\end{table}
+
+Ein Vergleich mit dem im Datenblatt angegebenen Frame-Format in \autoref{fig:task1_cc1101_frame} zeigt, dass das empfangene Signal dem erwarteten Muster entspricht. Zu beachten ist, dass das Sync Word  am Sender von \texttt{0xD3} auf \texttt{0x0F} geändert wurde.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\textwidth]{\usrpRecvPath{cc1101_fig_21.png}}
+    \caption{Daten-Format aus dem Datenblatt \cite[S.~42, Abb.~21]{TI_CC1101_Datasheet}}\label{fig:task1_cc1101_frame}
+\end{figure}
+
+
+
+
+
+Anhand der Zeitachse in \autoref{fig:task1_baudrate} ist zu erkennen, dass die Periode eines Bits ca. $\SI{1}{\milli\second}$ beträgt, was mit $\frac{1}{\SI{1}{\kilo\bit\per\second}}$ übereinstimmt und die Baudrate laut Senderkonfiguration bestätigt.
+
+
+
+\newpage
+\subsection{Analyse im Frequenzbereich}
+
+Im Spektrum des empfangenen Signals sind die beiden Frequenzanteile der FSK-Modulation gut zu erkennen. Der gemessene Frequenzabstand der Peaks zur Mittelfrequenz in \autoref{fig:task1_spectrum1} beträgt ca. $\pm\SI{50}{\kilo\hertz}$, was gut mit der berechneten Abweichung von $\SI{47.6}{\kilo\hertz}$ übereinstimmt.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\usrpRecvPath{1_Spectrum.png}}
+    \caption{Empfangenes Signal im Frequenzbereich}\label{fig:task1_spectrum1}
+\end{figure}
+
+Im Zeitlichen Verlauf des Spektrums in \autoref{fig:task1_spectrum2} ist zu erkennen, dass die beiden Frequenzanteile des FSK-Signals regelmäßig wechseln, was dem gesendeten Datensignal entspricht. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\usrpRecvPath{1_Waterfall.png}}
+    \caption{Empfangenes Signal im Frequenzbereich}\label{fig:task1_spectrum2}
+\end{figure}
+
+Dabei ist die untere Frequenzkomponente dem Symbol \texttt{'0'} und die obere dem Symbol \texttt{'1'} zugeordnet.
+
+\begin{table}[h]
+    \centering
+    \caption{FSK Symbolencoding \cite[S.~42, Tab.~29]{TI_CC1101_Datasheet}}
+    \label{tab:fsk_modulation}
+    \begin{tabularx}{\textwidth}{YYY}
+        Format & Symbol & Coding \\ \midrule
+        \multirow{2}{*}{2-FSK} & \texttt{'0'} & $-f_\text{dev}$ \\
+        & \texttt{'1'} & $+f_\text{dev}$ \\
+    \end{tabularx}
+\end{table}
