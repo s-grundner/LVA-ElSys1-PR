@@ -1,8 +1,9 @@
-ElSys1_Protokoll_k12136610_2.aux
-ElSys1_Protokoll_k12136610_2.log
-ElSys1_Protokoll_k12136610_2.synctex.gz
-ElSys1_Protokoll_k12136610_2.toc
+*.aux
+*.log
+*.synctex.gz
+*.toc
+*.dls
+*.fls
+*.fdb_latexmk
+*.bbl
 ElSys1_Protokoll_k12136610_2.pdf
-ElSys1_Protokoll_k12136610_2.dls
-ElSys1_Protokoll_k12136610_2.fls
-ElSys1_Protokoll_k12136610_2.fdb_latexmk

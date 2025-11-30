@@ -45,6 +45,17 @@
 \usepackage{amsfonts}
 \usepackage{subfigure}
 \usepackage{enumerate}
+\usepackage{pdfpages}
+\usepackage[normalem]{ulem}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{multirow}
+
+\renewcaptionname{ngerman}{\figurename}{Abb.}
+\captionsetup{font=small}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -57,24 +68,23 @@
 \title{Elektronische Systeme 1 Praktikum}
 \subtitle{Protokoll}
 \author{%
-    k12136610
+    Simon Grundner k12136610
+    \and
+    Alexander Gaisbauer k12030724
     \authornewline
-    Simon Grundner
-    \authornewline
-    Alexander Gaisbauer
     \authornewline
     Gruppe 2
     \authornewline
     \affiliation{Institut für Nachrichtentechnik und Hochfrequenzsysteme}
     \authornewline
     \authormail{k12136610@students.jku.at}
+    \authormail{k12030724@students.jku.at}
     \authorweb{https://jku.at/nthfs}
-    \authornewline
 }
 
 \date{2025-11-21}
 \partnerlogo{logos/nthfs}
-\setbottommark{Simon Grunder, k12136610}
+\setbottommark{Simon Grunder k12136610, Alexander Gaisbauer k12030724}
 \keywords{GNU-Radio-Companion, SDR, CC1101-Transciever Chip}
 
 \maketitle
@@ -87,6 +97,11 @@
 \lstset{
     language=python
 }
+\newcommand{\usrpRecvPath}[1]{../1_usrp_recv/#1}
+\newcommand{\usrpSendPath}[1]{../2_usrp_send/#1}
+\newcommand{\noncoherentPath}[1]{../3_noncoherent/#1}
+\newcommand{\rssiPath}[1]{../4_rssi/#1}
+\newcommand{\transmitPowerPath}[1]{../5_transmit_power/#1}
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -95,6 +110,9 @@
 \input{Task3.tex}
 \input{Task4.tex}
 \input{Task5.tex}
+
+\bibliographystyle{plain}
+\bibliography{bib/references}
 
 \end{document}
 \endinput
