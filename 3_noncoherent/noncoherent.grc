@@ -151,7 +151,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [424, 300.0]
+    coordinate: [360, 292.0]
     rotation: 0
     state: enabled
 - name: band_pass_filter_0_0
@@ -176,7 +176,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [424, 132.0]
+    coordinate: [352, 132.0]
     rotation: 0
     state: enabled
 - name: blocks_char_to_float_0
@@ -193,7 +193,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1536, 272.0]
+    coordinate: [1048, 264.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_mag_squared_0_0
@@ -209,7 +209,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [656, 360.0]
+    coordinate: [584, 296.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_mag_squared_0_0_0
@@ -225,7 +225,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 192.0]
+    coordinate: [584, 248.0]
     rotation: 0
     state: enabled
 - name: blocks_file_sink_0
@@ -278,9 +278,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1688, 416.0]
+    coordinate: [1200, 336.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_sub_xx_0
   id: blocks_sub_xx
   parameters:
@@ -296,7 +296,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [992, 264.0]
+    coordinate: [784, 256.0]
     rotation: 0
     state: enabled
 - name: digital_binary_slicer_fb_0
@@ -311,7 +311,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1352, 280.0]
+    coordinate: [912, 272.0]
     rotation: 0
     state: enabled
 - name: qtgui_sink_x_0
@@ -340,9 +340,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [632, 624.0]
+    coordinate: [576, 344.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_sink_x_0_0
   id: qtgui_sink_x
   parameters:
@@ -369,9 +369,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 456.0]
+    coordinate: [576, 120.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -466,9 +466,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1712, 256.0]
+    coordinate: [1200, 248.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_sink_x_0_0
   id: qtgui_time_sink_x
   parameters:
@@ -563,7 +563,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1000, 144.0]
+    coordinate: [784, 168.0]
     rotation: 0
     state: disabled
 - name: qtgui_time_sink_x_0_0_0
@@ -660,29 +660,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [984, 416.0]
+    coordinate: [784, 328.0]
     rotation: 0
     state: disabled
-- name: rational_resampler_xxx_0
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    decim: '100'
-    fbw: '0'
-    interp: '1'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    taps: '[]'
-    type: fff
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1176, 248.0]
-    rotation: 0
-    state: bypassed
 - name: uhd_usrp_source_0
   id: uhd_usrp_source
   parameters:
@@ -1132,9 +1112,8 @@ connections:
 - [blocks_complex_to_mag_squared_0_0_0, '0', blocks_sub_xx_0, '0']
 - [blocks_complex_to_mag_squared_0_0_0, '0', qtgui_time_sink_x_0_0, '0']
 - [blocks_head_0, '0', blocks_file_sink_0, '0']
-- [blocks_sub_xx_0, '0', rational_resampler_xxx_0, '0']
+- [blocks_sub_xx_0, '0', digital_binary_slicer_fb_0, '0']
 - [digital_binary_slicer_fb_0, '0', blocks_char_to_float_0, '0']
-- [rational_resampler_xxx_0, '0', digital_binary_slicer_fb_0, '0']
 - [uhd_usrp_source_0, '0', band_pass_filter_0, '0']
 - [uhd_usrp_source_0, '0', band_pass_filter_0_0, '0']
 

@@ -142,9 +142,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 152.0]
+    coordinate: [608, 152.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_file_sink_0
   id: blocks_file_sink
   parameters:
@@ -160,7 +160,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1320, 264.0]
+    coordinate: [1152, 192.0]
     rotation: 0
     state: disabled
 - name: blocks_head_0
@@ -178,7 +178,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1136, 280.0]
+    coordinate: [976, 208.0]
     rotation: 0
     state: disabled
 - name: low_pass_filter_0
@@ -202,7 +202,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [512, 192.0]
+    coordinate: [416, 112.0]
     rotation: 0
     state: enabled
 - name: qtgui_sink_x_0_0
@@ -231,7 +231,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 384.0]
+    coordinate: [360, 264.0]
     rotation: 0
     state: disabled
 - name: qtgui_sink_x_0_0_0
@@ -260,7 +260,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 384.0]
+    coordinate: [592, 264.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -357,9 +357,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 136.0]
+    coordinate: [976, 96.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: rational_resampler_xxx_0
   id: rational_resampler_xxx
   parameters:
@@ -377,9 +377,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [968, 128.0]
+    coordinate: [784, 128.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: uhd_usrp_source_0
   id: uhd_usrp_source
   parameters:
@@ -813,7 +813,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [72, 204.0]
+    coordinate: [72, 164.0]
     rotation: 0
     state: enabled
 

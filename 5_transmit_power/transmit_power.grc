@@ -11,7 +11,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: transmit_power
+    id: ASK_recv
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -22,7 +22,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: Not titled yet
+    title: ASK Reciever with Pulse Shaping
     window_size: (1000,1000)
   states:
     bus_sink: false
@@ -42,31 +42,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 16.0]
-    rotation: 0
-    state: enabled
-- name: dev_exp
-  id: variable
-  parameters:
-    comment: ''
-    value: '4'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [784, 16.0]
-    rotation: 0
-    state: enabled
-- name: dev_mantissa
-  id: variable
-  parameters:
-    comment: ''
-    value: '7'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [856, 16.0]
+    coordinate: [416, 8.0]
     rotation: 0
     state: enabled
 - name: f_center_Hz
@@ -78,31 +54,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [312, 16.0]
-    rotation: 0
-    state: enabled
-- name: f_xosc_Hz
-  id: variable
-  parameters:
-    comment: ''
-    value: 26e6
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [704, 16.0]
-    rotation: 0
-    state: enabled
-- name: fsk_deviation_Hz
-  id: variable
-  parameters:
-    comment: ''
-    value: (f_xosc_Hz / 2**17) * (8 + dev_mantissa) * 2**dev_exp
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [584, 16.0]
+    coordinate: [248, 8.0]
     rotation: 0
     state: enabled
 - name: gain_db
@@ -114,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [408, 16.0]
+    coordinate: [344, 8.0]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -126,7 +78,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [224, 16.0]
+    coordinate: [160, 8.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_mag_squared_0
@@ -142,7 +94,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [720, 144.0]
+    coordinate: [608, 160.0]
     rotation: 0
     state: enabled
 - name: blocks_null_sink_0
@@ -159,7 +111,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1024, 264.0]
+    coordinate: [792, 224.0]
     rotation: 0
     state: disabled
 - name: low_pass_filter_0
@@ -183,7 +135,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [496, 96.0]
+    coordinate: [376, 112.0]
     rotation: 0
     state: enabled
 - name: qtgui_sink_x_0_0
@@ -212,7 +164,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 328.0]
+    coordinate: [368, 256.0]
     rotation: 0
     state: disabled
 - name: qtgui_sink_x_0_0_0
@@ -241,7 +193,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 328.0]
+    coordinate: [592, 256.0]
     rotation: 0
     state: disabled
 - name: qtgui_time_sink_x_0_0
@@ -338,7 +290,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [928, 120.0]
+    coordinate: [792, 136.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
@@ -774,11 +726,12 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [128, 180.0]
+    coordinate: [80, 156.0]
     rotation: 0
     state: enabled
 
 connections:
+- [blocks_complex_to_mag_squared_0, '0', blocks_null_sink_0, '0']
 - [blocks_complex_to_mag_squared_0, '0', qtgui_time_sink_x_0_0, '0']
 - [low_pass_filter_0, '0', blocks_complex_to_mag_squared_0, '0']
 - [low_pass_filter_0, '0', qtgui_sink_x_0_0_0, '0']

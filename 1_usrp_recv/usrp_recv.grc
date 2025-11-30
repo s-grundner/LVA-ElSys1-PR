@@ -142,7 +142,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [528, 232.0]
+    coordinate: [352, 152.0]
     rotation: 0
     state: enabled
 - name: blocks_file_sink_0
@@ -152,7 +152,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: /home/simon/Dokumente/repos-jku/ElSys-PR/1_usrp_revc/bits.txt
+    file: /home/simon/Dokumente/repos-jku/ElSys-PR/1_usrp_revc/bits.gnc
     type: float
     unbuffered: 'True'
     vlen: '1'
@@ -160,7 +160,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1080, 360.0]
+    coordinate: [880, 272.0]
     rotation: 0
     state: disabled
 - name: blocks_head_0
@@ -178,7 +178,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 376.0]
+    coordinate: [704, 288.0]
     rotation: 0
     state: disabled
 - name: qtgui_sink_x_0_0
@@ -207,7 +207,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [520, 352.0]
+    coordinate: [352, 248.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -304,7 +304,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [968, 216.0]
+    coordinate: [728, 136.0]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_0
@@ -324,7 +324,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 208.0]
+    coordinate: [544, 128.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
@@ -760,7 +760,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 244.0]
+    coordinate: [64, 148.0]
     rotation: 0
     state: enabled
 
