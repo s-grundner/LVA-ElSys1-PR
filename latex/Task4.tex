@@ -11,8 +11,66 @@
     \item Beschreiben und veranschaulichen Sie ihre Erkenntnisse
 \end{itemize}
 
-\subsection{Einfluss der Sendeleistung}
+Die dBm-Werte sollen im dBm-Format über zwei Parametersweeps festgestellt werden. Im letzten Schritt wird die Distanzmessung mit der Friis-Gleichung abgeglichen.
+Im ersten Schritt wird verifiziert, ob die Umrechnung von RSSI zu dBm richtig erfolgt. Dazu werden Sender und Empfänger 1 m voneinander entfernt aufgestellt und der Sender über die PA-TABLE-Tabelle iteriert, wobei alle anderen Einstellungen gleich bleiben (siehe Abschnitt [sec:pa-table]).
+
+\label{sec:pa-table}
+\begin{lstlisting}[language=Python,caption={Sendevorgang über alle paTableIdx},label={lst:pa_table}]
+# --- Send Data ---
+
+data = [0xB3]
+CC1101_433.setModulation("GFSK")
+
+pa_table = [-30, -20, -15, -10, 0, 5, 7, 10]  # dBm values
+
+for paTableIdx in range(len(pa_table)):
+    CC1101_433.setTXPower(paTableIdx)
+    for i in range(10):
+        print(CC1101_433.sendData(data))
+        time.sleep(0.1)
+\end{lstlisting}
+
+
+Die mit dem in Listing~\ref{lst:pa_table} gezeigten Code erzeugten Rohmesswerte ergeben in Abhängigkeit von der Sendeleistung die in Abbildung~\ref{fig:rssi_gfsk_plot} gezeigten Rohdaten.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../4_rssi/plots/rssi_gfsk_plot.png}
+    \caption{RSSI in Abhängigkeit von der Sendeleistung}
+    \label{fig:rssi_gfsk_plot}
+\end{figure}
+
+\subsection{Umrechnung von RSSI in dBm}
+
+Mit der in Gleichung~\ref{eq:rssi_umrechnung} dargestellten Formel wird die chipinterne Darstellung des RSSI-Wertes in dBm umgewandelt.
+
+\begin{equation}
+\text{dBm} =
+\begin{cases}
+\frac{\text{RSSI} - 256}{2} - 74, & \text{wenn RSSI} \geq 128 \\
+\frac{\text{RSSI}}{2} - 74, & \text{wenn RSSI} < 128
+\end{cases}
+\label{eq:rssi_umrechnung}
+\end{equation}
+
+Angepasst und gemittelt sind nun die Rohdaten
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../4_rssi/plots/rssi_gfsk_plot_mean_dBm.png}
+    \caption{RSSI in Abhängigkeit von der Sendeleistung}
+    \label{fig:rssi_gfsk_plot_dBm}
+\end{figure}
 
 \subsection{Einfluss der Distanz}
+
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../4_rssi/plots/range_plot_mean_dBm_against_friis.png}
+    \caption{RSSI in Abhängigkeit von der Distanz mit Friis-Gleichung}
+    \label{fig:range_plot_mean}
+\end{figure}
 
 \subsection{Auswertung der Ergebnisse}

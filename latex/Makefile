@@ -23,7 +23,7 @@ OPENCMD := $(shell command -v xdg-open 2>/dev/null || command -v open 2>/dev/nul
 
 # LaTeX flags
 LATEXFLAGS := -interaction=nonstopmode -halt-on-error -file-line-error
-LATEXMKFLAGS := -pdf -interaction=nonstopmode -file-line-error -silent
+LATEXMKFLAGS := -pdf -interaction=nonstopmode -file-line-error -silent -f
 
 # Collect sources so `make` notices changes (wildcard includes common files/dirs)
 TEX_SRCS := $(wildcard *.tex)
@@ -31,7 +31,7 @@ BIB_SRCS := $(wildcard *.bib)
 STY_SRCS := $(wildcard *.sty)
 IMG_SRCS := $(wildcard images/* logos/*)
 
-.PHONY: all default help clean distclean watch view
+.PHONY: all default help clean distclean watch view $(OUT)
 
 default: all
 
@@ -47,7 +47,6 @@ $(OUT): $(TEX_SRCS) $(BIB_SRCS) $(STY_SRCS) $(IMG_SRCS)
 	@if grep -q "Citation" $(MAIN:.tex=.log) 2>/dev/null || true; then \
 		$(BIB) $(MAIN:.tex=); \
 	fi
-	$(LATEX) $(LATEXFLAGS) $(MAIN)
 	$(LATEX) $(LATEXFLAGS) $(MAIN)
 	@echo "Built: $(OUT)"
 
