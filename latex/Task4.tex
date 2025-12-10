@@ -1,21 +1,12 @@
 \newpage
 \section{RSSI Analyse}
 
-\begin{itemize}[noitemsep]
-    \item Kurze Beschreibung der Aufgabenstellung
-    \item Analyse des RSSI-Wertes, wenn folgende Parameter verändert werden
-    \begin{itemize}[noitemsep]
-        \item Sendeleistung
-        \item Distanz
-    \end{itemize}
-    \item Beschreiben und veranschaulichen Sie ihre Erkenntnisse
-\end{itemize}
+Die Signalstärke soll im dBm-Format über zwei Parametersweeps (über Sendeleistung und Distanz) festgestellt werden. Im letzten Schritt wird die Distanzmessung mit der Friis-Gleichung abgeglichen.
 
-Die dBm-Werte sollen im dBm-Format über zwei Parametersweeps festgestellt werden. Im letzten Schritt wird die Distanzmessung mit der Friis-Gleichung abgeglichen.
-Im ersten Schritt wird verifiziert, ob die Umrechnung von RSSI zu dBm richtig erfolgt. Dazu werden Sender und Empfänger 1 m voneinander entfernt aufgestellt und der Sender über die PA-TABLE-Tabelle iteriert, wobei alle anderen Einstellungen gleich bleiben (siehe Abschnitt [sec:pa-table]).
+Im ersten Schritt wird verifiziert, ob die Umrechnung von RSSI zu dBm richtig erfolgt. Dazu werden Sender und Empfänger 1 m voneinander entfernt aufgestellt und der Sender über die \lstinline{pa_table} iteriert, wobei alle anderen Einstellungen gleich bleiben (siehe \autoref{sec:pa-table}).
 
 \label{sec:pa-table}
-\begin{lstlisting}[language=Python,caption={Sendevorgang über alle paTableIdx},label={lst:pa_table}]
+\begin{lstlisting}[language=Python,caption={Sendevorgang über alle paTableIdx}]
 # --- Send Data ---
 
 data = [0xB3]
@@ -31,7 +22,7 @@ for paTableIdx in range(len(pa_table)):
 \end{lstlisting}
 
 
-Die mit dem in Listing~\ref{lst:pa_table} gezeigten Code erzeugten Rohmesswerte ergeben in Abhängigkeit von der Sendeleistung die in Abbildung~\ref{fig:rssi_gfsk_plot} gezeigten Rohdaten.
+Die mit dem in \autoref{sec:pa-table} gezeigten Code erzeugten Rohmesswerte ergeben in Abhängigkeit von der Sendeleistung die in \autoref{fig:rssi_gfsk_plot} gezeigten Rohdaten.
 
 \begin{figure}[h!]
     \centering
@@ -42,7 +33,7 @@ Die mit dem in Listing~\ref{lst:pa_table} gezeigten Code erzeugten Rohmesswerte 
 
 \subsection{Umrechnung von RSSI in dBm}
 
-Mit der in Gleichung~\ref{eq:rssi_umrechnung} dargestellten Formel wird die chipinterne Darstellung des RSSI-Wertes in dBm umgewandelt.
+Mit der in \autoref{eq:rssi_umrechnung} dargestellten Formel wird die chipinterne Darstellung des RSSI-Wertes in dBm umgewandelt\cite{TI_CC1101_Datasheet}}.
 
 \begin{equation}
 \text{dBm} =
@@ -53,24 +44,28 @@ Mit der in Gleichung~\ref{eq:rssi_umrechnung} dargestellten Formel wird die chip
 \label{eq:rssi_umrechnung}
 \end{equation}
 
-Angepasst und gemittelt sind nun die Rohdaten
+
+
+
+\subsection{Einfluss der Sendeleistung}
+
+Nach der Mittelung und dem gegenüberstellen von der jeweilig eingestellten Sendeleistung kann man in \autoref{fig:rssi_gfsk_plot_mean_dBm} sehen, das sich zwischen der Empfangsleistung und Sendeleistung, wie zu erwarten, ein lineares Verhältniss bildet.
+
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.7\textwidth]{../4_rssi/plots/rssi_gfsk_plot_mean_dBm.png}
     \caption{RSSI in Abhängigkeit von der Sendeleistung}
-    \label{fig:rssi_gfsk_plot_dBm}
+    \label{fig:rssi_gfsk_plot_mean_dBm}
 \end{figure}
 
 \subsection{Einfluss der Distanz}
 
-
+Im nächsten schritt wird nun nur die Distanz zwischen Sender und Empfänger verändert, in 2 Meter abschnitten wird der Empfänger innerhalb des Ganges positioniert und 10 RSSI Rohwerte pro Abstand aufgenommen. Dies wird bis auf eine Distanz von 15 Meter durchgeführt, die gemittelten dbm Werte werden nun der Friis gleichung im \autoref{fig:range_plot_mean_dBm_against_friis} gegeübergestellt.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.7\textwidth]{../4_rssi/plots/range_plot_mean_dBm_against_friis.png}
     \caption{RSSI in Abhängigkeit von der Distanz mit Friis-Gleichung}
-    \label{fig:range_plot_mean}
+    \label{fig:range_plot_mean_dBm_against_friis}
 \end{figure}
-
-\subsection{Auswertung der Ergebnisse}
