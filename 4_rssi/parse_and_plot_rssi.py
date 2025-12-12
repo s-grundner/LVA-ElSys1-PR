@@ -282,13 +282,27 @@ def plot_all_rssi(
                 float(r.replace("m", "")) for r in ranges[: len(mean_rssi_dBm)]
             ]
 
-            # Calculate Friis prediction, normalized to match first measurement
-            friis_prediction = calculate_friis_path_loss(
-                distances_m,
-                frequency_hz=433e6,
-                reference_distance=distances_m[0],
-                reference_power_dbm=mean_rssi_dBm[0],
-            )
+            # Fit Friis prediction offset A using least squares over 5m, 7m, 9m
+            fit_distances = [5.0, 7.0, 9.0]
+            fit_indices = []
+            for fd in fit_distances:
+                label = f"{int(fd)}m"
+                if label in ranges[: len(mean_rssi_dBm)]:
+                    fit_indices.append(ranges.index(label))
+            fit_measurements = [
+                mean_rssi_dBm[i] for i in fit_indices if i < len(mean_rssi_dBm)
+            ]
+            fit_d = [distances_m[i] for i in fit_indices if i < len(distances_m)]
+
+            if len(fit_measurements) == len(fit_distances):
+                # Model: Pr(d) = A - 20*log10(d), solve A by averaging A_i = Pr_i + 20*log10(d_i)
+                terms = [m + 20 * np.log10(d) for m, d in zip(fit_measurements, fit_d)]
+                A = np.mean(terms)
+            else:
+                # Fallback: normalize to first measurement
+                A = mean_rssi_dBm[0] + 20 * np.log10(distances_m[0])
+
+            friis_prediction = [A - 20 * np.log10(d) for d in distances_m]
 
             plt.figure()
             plt.plot(

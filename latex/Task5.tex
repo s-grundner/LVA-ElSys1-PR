@@ -37,10 +37,13 @@ Im Listing~\ref{lst:onboard_sender_soft_transition} ist die Implementierung der 
 
 \subsection{Aufbau des Empfängers}
 
-\begin{figure}[h]
+Wie in der \autoref{fig:task5_graph} dargestellt, wird das Signal nach der Tiefpassfilterung durch die „Complex to Magnitude“-Funktion in eine Amplitude umgewandelt und schließlich im „Time Sink“ im Zeitbereich dargestellt.
+
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{\transmitPowerPath{5_grc.pdf}}
     \caption{GNU Radio Companion Aufbau für Task 5}
+    \label{fig:task5_graph}
 \end{figure}
 
 \subsection{Vergleich der Pulsformen}
@@ -49,7 +52,7 @@ Im Listing~\ref{lst:onboard_sender_soft_transition} ist die Implementierung der 
 \autoref{fig:smooth} zeigt die Pulsformung bei ASK mit glatten Bitübergängen. Dabei werden die Signalflanken abgerundet, um die Signalbandbreite im Frequenzspektrum zu verringern. Im Gegensatz dazu ist in \autoref{fig:hard} die Pulsformung mit harten Bitübergängen dargestellt, bei der die Signalflanken abrupt wechseln und dadurch ein breiteres Spektrum erzeugen.
 
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
