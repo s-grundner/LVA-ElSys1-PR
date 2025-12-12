@@ -1,5 +1,5 @@
 \newpage
-\section{FSK-Transmitter}
+\section{FSK-Transmitter}\label{sec:task2}
 
 % \begin{itemize}[noitemsep]
 %     \item Kurze Beschreibung der Aufgabenstellung
@@ -64,7 +64,7 @@ Der Aufbau in GRC gleicht dem aus \autoref{sec:task1}, mit dem Unterschied, dass
     \caption{GNU Radio Companion Aufbau für Task 2}
 \end{figure}
 
-Die USRP-Source liefert das Basisband Signal des Kanals um die Frequenz 0 Hz. Der Tiefpassfilter dient dazu, die Anteile der Nachbarkanäle zu entfernen. Die Grenzfrequenz des Filters muss dabei größer sein als die Frequenzabweichung aus \autoref{eq:f_dev} des FSK-Signals. Da die Kanalbreite $\SI{200}{\kilo\hertz}$ beträgt, wird der Tiefpassfilter mit einer Grenzfrequenz von $\SI{100}{\kilo\hertz}$ eingestellt.
+Die USRP-Source liefert das Basisband Signal des Kanals um die Frequenz \SI{0}{\hertz}. Der Tiefpassfilter dient dazu, die Anteile der Nachbarkanäle symmetrisch um \SI{0}{\hertz} zu entfernen. Die Grenzfrequenz des Filters muss dabei größer sein als die Frequenzabweichung aus \autoref{eq:f_dev} des FSK-Signals. Da die Kanalbreite $\SI{200}{\kilo\hertz}$ beträgt, wird der Tiefpassfilter mit einer Grenzfrequenz von $\SI{100}{\kilo\hertz}$ eingestellt.
 
 \begin{figure}[h]
     \centering
@@ -143,7 +143,7 @@ Für 4-FSK sind nun mehrere Peaks im Spektrum zu erkennen, da nun auch bis zu 4 
     \caption{4-FSK Signal}
 \end{figure}
 
-Bei GFSK gibt es ähnlich wie bei 2-FSK nur zwei Frequenzkomponenten. GSFK zeichnet sich dadurch aus, dass die Frequenz nicht sprunghaft umgeschalten wird, sondern einen kontinuierlichen übergang aufweist. Im Zeitverlauf des Spektrums in \autoref{fig:task2_gfsk} kann man erkennen, dass bei einem Symbolwechsel der Peak von $+f_\text{dev}$ nach $-f_\text{dev}$ wandert.
+Bei GFSK gibt es ähnlich wie bei 2-FSK nur zwei Symbole. GSFK zeichnet sich dadurch aus, dass die Frequenz nicht sprunghaft umgeschalten wird, sondern einen kontinuierlichen übergang aufweist. Im Zeitverlauf des Spektrums in \autoref{fig:task2_gfsk} kann man erkennen, dass bei einem Symbolwechsel der Peak von $-f_\text{dev}$ nach $+f_\text{dev}$ wandert und vice versa.
 
 \begin{figure}[h]
     \centering

@@ -1,47 +1,51 @@
 \newpage
 \section{Nicht-kohärenter 2-FSK-Empfänger}
 
-\begin{itemize}[noitemsep]
-    \item Kurze Beschreibung der Aufgabenstellung
-    % \item Blockdiagramm des implementierten nicht-kohärenten Empfängers
-    % \item Screenshot des GNU Radio Companion Aufbaus
-    \begin{itemize}[noitemsep]
-        \item Parameter der Bandpassfilter (warum wurden diese so gewählt?)
-    \end{itemize}
-    \item Analyse des empfangenen Signals im Zeitbereich
-    \begin{itemize}[noitemsep]
-        % \item Grafische Darstellung
-        \item Interpretation des Ergebnisses 
-    \end{itemize}
-    \item Analyse des empfangenen Signals im Frequenzbereich
-    \begin{itemize}[noitemsep]
-        % \item Grafische Darstellung
-        \item Interpretation des Ergebnisses
-    \end{itemize}
-\end{itemize}
+% \begin{itemize}[noitemsep]
+%     \item Kurze Beschreibung der Aufgabenstellung
+%     \item Blockdiagramm des implementierten nicht-kohärenten Empfängers
+%     \item Screenshot des GNU Radio Companion Aufbaus
+%     \begin{itemize}[noitemsep]
+%         \item Parameter der Bandpassfilter (warum wurden diese so gewählt?)
+%     \end{itemize}
+%     \item Analyse des empfangenen Signals im Zeitbereich
+%     \begin{itemize}[noitemsep]
+%         \item Grafische Darstellung
+%         \item Interpretation des Ergebnisses 
+%     \end{itemize}
+%     \item Analyse des empfangenen Signals im Frequenzbereich
+%     \begin{itemize}[noitemsep]
+%         \item Grafische Darstellung
+%         \item interpretation des ergebnisses
+%     \end{itemize}
+% \end{itemize}
+
+Es ist ein nicht-kohärenter 2-FSK Empfänger zu implementieren, der das Signal aus \autoref{sec:task2} demoduliert. Dazu wird der Aufbau wie in \autoref{fig:noncoherent_fsk_receiver} gezeigt in GRC implementiert. Anschließend wird das empfangene Signal im Zeit- und Frequenzbereich untersucht.
 
 \subsection{Blockschaltbild eines nicht-kohärenten 2-FSK Empfängers}
 
 \begin{figure}[h]
     \centering
-    \begin{circuitikz}[>=latex']
+    \begin{circuitikz}[>=latex', transform shape, scale=0.9]
         \draw (0,0) node[bareRXantenna](ant){} |- ++(1,-0.5) coordinate (aout) node[circ]{} node[right]{$r[k]\in\mathbb{C}$};
         \node[above] at (ant.top){USRP};
-        \draw (aout) |- ++(1,1) to[bandpass,>,l=$f_0+f_\text{dev}$]
+        \draw (aout) |- ++(1,1) to[bandpass,>,l^=$f_0+\frac{f_\text{dev}}{2}$]
             ++(2,0) to[twoport,>,align=center,l={Envelope\\Detector}, t={$(\cdot)^2$}]
-            ++(2,0) -- ++(1,0) coordinate (sum1);
-        \draw (aout) |- ++(1,-1) to[bandpass,>,l_=$f_0-f_\text{dev}$]
+            ++(2,0) -- ++(1.5,0) coordinate (sum1) node[anchor=south east]{$r_1[k]\in\mathbb{R}$};
+        \draw (aout) |- ++(1,-1) to[bandpass,>,l_=$f_0-\frac{f_\text{dev}}{2}$]
             ++(2,0) to[twoport,>,align=center,t={$(\cdot)^2$}]
-            ++(2,0) -- ++(1,0) coordinate (sum2);
+            ++(2,0) -- ++(1.5,0) coordinate (sum2) node[anchor=north east]{$r_0[k]\in\mathbb{R}$};
         \node[adder, scale=0.7](add) at ($(sum1)!0.5!(sum2)$) {};
         \draw[->] (sum1) -- (add.north) node[pos=0.5, left] {$+$};
         \draw[->] (sum2) -- (add.south) node[pos=0.5, left] {$-$};
-        \draw[->] (add.east) to[allornothing, align=center, l={Threshold\\Detector}] ++(2,0) node[right] {Bitstream Output};
+        \draw[->] (add.east) to[allornothing, align=center, l={Threshold\\Detector}] ++(2,0) node[right, text width=5em] {Bitstream Output};
     \end{circuitikz}
-    \caption{Blockschaltbild eines nicht-kohärenten FSK Empfängers}
+    \caption{Blockschaltbild eines nicht-kohärenten FSK Empfängers}\label{fig:noncoherent_fsk_receiver}
 \end{figure}
 
-Die Mittelfreqenz der Bandpässe wird so gewählt, dass die Frequenzen des \texttt{'1'} Symbol bzw. des \texttt{'0'} Symbols durchgelassen werden. 
+Das Empfangene Signal kann nun nicht mehr wie in \autoref{sec:task2} symmetrisch um \SI{0}{\hertz} gefiltert werden. Je Symbol muss der jeweilige Frequenzanteil mit einem Bandpassfilter herausgefiltert werden, damit er anschließend mit einem Hüllkurvendemodulator detektiert werden kann.
+
+Die Mittelfreqenz der Bandpässe wird so gewählt, dass die Frequenzen des \texttt{'1'} Symbols bzw. des \texttt{'0'} Symbols durchgelassen werden. Eine Aufzeichnung des Spektrum des empfangenen Basisbandsignals ergab, dass die frequenzanteile bei $\pm \frac{f_\mathrm{dev}}{2}$ liegen. Eine Bandbreite von ca. $\SI{10}{\kilo\hertz}$ ist ausreichend, um die Signale durchzulassen.
 
 \subsection{Aufbau in GRC}
 
@@ -51,26 +55,32 @@ Die Mittelfreqenz der Bandpässe wird so gewählt, dass die Frequenzen des \text
     \caption{GNU Radio Companion Aufbau für Task 3}
 \end{figure}
 
-\newpage
+Der Hüllkurvendetektor wird durch den \textit{Complex to Mag Squared} Block realisiert. Ob ein Symbol als \texttt{'1'} oder \texttt{'0'} erkannt wird, wird durch den \textit{Binary Slicer} Block entschieden.
+
 \subsection{Analyse im Zeitbereich}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{\noncoherentPath{RecievedBitStream.png}}
-    \caption{Empfangener Bitstream am Ausgang des Demodulators}
+    \includegraphics[width=\textwidth]{\noncoherentPath{RecievedBitStream_Annotated.png}}
+    \caption{Empfangener Bitstream am Ausgang des Demodulators}\label{fig:recieved_bitstream}
 \end{figure}
 
-\newpage
+Im Zeitbereich ist nun nicht mehr das empfangene Symbol $\in\{-1,1\}$ sichtbar, sondern der tatsächliche Bitstrom $\in\{0,1\}$. Gesendet wurde das Datenwort \texttt{0xB3} $\equiv$ \texttt{0b1011\,0011}. Es wurde Festgestellt, dass die zweige für das \texttt{-1}-Symbol und das \texttt{1}-Symbol vertauscht sind, daher sind in \autoref{fig:recieved_bitstream} die Pegel invertiert dargestellt. Trotzdem ist zu erkennen, dass das Datenwort korrekt empfangen wurde: Das Abgelesene Datenwort ist \texttt{0b0100\,1100}. Invertiert ergibt das \texttt{0b1011\,0011} $\equiv$ \texttt{0xB3}, was dem gesendeten Datenwort entspricht.
+
 \subsection{Analyse im Frequenzbereich}
+
+Ohne Filterung ist das gesamte Spektrum wie in \autoref{fig:baseband_no_bpf} dargestellt sichtbar. Für den Eingestellten Kanal (Kanal 1) treten die gewünschten Frequenzkomponenten um \SI{0}{\hertz} auf, jedoch ist auch die aktivität der Nachbarkanäle sichtbar, welche das Signal stören können.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{\noncoherentPath{Baseband.png}}
-    \caption{Empfangenes Signal ohne Filterung}
+    \caption{Empfangenes Signal ohne Filterung}\label{fig:baseband_no_bpf}
 \end{figure}
+
+Mit den Bandpassfiltern ist in \autoref{fig:baseband_bpf} zu erkennen, dass nurnoch die gewünschten Frequenzanteile $\pm \frac{f_\mathrm{dev}}{2}$ durchgelassen werden. Der Hüllkurvendetektor kann somit die Amplitude der jeweiligen Frequenzanteile bestimmen, um die Symbole zu unterscheiden.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{\noncoherentPath{Baseband_BPF.png}}
-    \caption{Empfangenes Signal mit Bandpassfilterung}
+    \caption{Empfangenes Signal mit Bandpassfilterung}\label{fig:baseband_bpf}
 \end{figure}
