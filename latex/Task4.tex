@@ -1,9 +1,9 @@
 \newpage
 \section{RSSI Analyse}
 
-Die Signalstärke soll im dBm-Format über zwei Parametersweeps (über Sendeleistung und Distanz) festgestellt werden. Im letzten Schritt wird die Distanzmessung mit der Friis-Gleichung abgeglichen.
+Die Signalstärke soll im dBm-Format über zwei Parameteränderungen (über Sendeleistung und Distanz) festgestellt werden. Im letzten Schritt wird die Distanzmessung mit der Friis-Gleichung abgeglichen.
 
-Im ersten Schritt wird verifiziert, ob die Umrechnung von RSSI zu dBm richtig erfolgt. Dazu werden Sender und Empfänger 1 m voneinander entfernt aufgestellt und der Sender über die \lstinline{pa_table} iteriert, wobei alle anderen Einstellungen gleich bleiben (siehe \autoref{sec:pa-table}).
+Zuerst muss verifiziert werden, dass die Umrechnung von RSSI zu dBm richtig erfolgt. Dazu werden Sender und Empfänger 1 m voneinander entfernt aufgestellt und der Sender über die \lstinline{pa_table} iteriert, wobei alle anderen Einstellungen gleich bleiben (siehe \autoref{sec:pa-table}).
 
 \label{sec:pa-table}
 \begin{lstlisting}[language=Python,caption={Sendevorgang über alle paTableIdx}]
@@ -49,8 +49,7 @@ Mit der in \autoref{eq:rssi_umrechnung} dargestellten Formel wird die chipintern
 
 \subsection{Einfluss der Sendeleistung}
 
-Nach der Mittelung und dem gegenüberstellen von der jeweilig eingestellten Sendeleistung kann man in \autoref{fig:rssi_gfsk_plot_mean_dBm} sehen, das sich zwischen der Empfangsleistung und Sendeleistung, wie zu erwarten, ein lineares Verhältniss bildet.
-
+Nach der Mittelung und dem gegenüberstellen von der jeweilig eingestellten Sendeleistung kann man in \autoref{fig:rssi_gfsk_plot_mean_dBm} sehen, das sich zwischen der Empfangsleistung und Sendeleistung, wie zu erwarten, ein lineares Verhältniss bildet. Da die distanz zwischen Sender und Empfangsmodul gleich bleibt ist ergibt sich eine konstante Dämpfung zwischen den beiden Modulen.
 
 \begin{figure}[h!]
     \centering

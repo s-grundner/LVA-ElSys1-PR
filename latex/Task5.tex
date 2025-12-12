@@ -1,14 +1,39 @@
 \newpage
 \section{ASK-Pulsformung}
 
-\begin{itemize}[noitemsep]
-    \item Kurze Beschreibung der Aufgabenstellung
-    \item Veranschaulichen Sie die Pulsformung fü ASK (\textit{smooth bit transitions})
-\end{itemize}
+% \begin{itemize}[noitemsep]
+%     \item Kurze Beschreibung der Aufgabenstellung
+%     \item Veranschaulichen Sie die Pulsformung fü ASK (\textit{smooth bit transitions})
+% \end{itemize}
+
+% Beispielhafte Referenz auf den Python-Code in Abschnitt~\ref{lst:onboard_sender_soft_transition}.
+
+Hier soll untersucht werden, welchen Einfluss die Rampeneinstellung auf die Signalform im Empfänger hat. Da scharfkantigere Signale in der Zeitdomäne eine größere Bandbreite im Frequenzband benötigen, wird hier untersucht, wie sich die Pulsformung eines ASK-Signals mit dem CC1101 erreichen lässt.
 
 
 
 \subsection{Sender}
+Mithilfe von \lstinline{setPARampingSteps(numSteps)} kann dem CC1101 mitgeteilt werden, bei Signaländerung den gesetzten \lstinline{pa_table} durchzuschreiten, um die scharfen Kanten eines Rechtecks etwas abzurunden.  Dabei schreitet der CC1101 bei einer Symboländerung durch den definierten PA-Table, wenn Ramping aktiviert wird. Dies soll im Empfänger ersichtlich werden.
+
+\begin{lstlisting}[language=Python, caption={Soft Bit Transition in onboard\_sender.py}, label={lst:onboard_sender_soft_transition}]
+# --- Soft Bit Transition ---
+
+CC1101_433.setPATable([0x0, 0x0E, 0x1D, 0x34, 0x60, 0x84, 0x8C, 0xC0])
+CC1101_433.setPARampingSteps(7)
+
+# --- Send Data ---
+
+data = [0xB3]
+
+while True:
+  #  for i in range (10):
+    print(CC1101_433.sendData(data))
+    time.sleep(0.1)
+   # break
+\end{lstlisting}
+
+Im Listing~\ref{lst:onboard_sender_soft_transition} ist die Implementierung der Soft Bit Transition im Python-Sender zu sehen.
+
 
 \subsection{Aufbau des Empfängers}
 
@@ -16,4 +41,29 @@
     \centering
     \includegraphics[width=\textwidth]{\transmitPowerPath{5_grc.pdf}}
     \caption{GNU Radio Companion Aufbau für Task 5}
+\end{figure}
+
+\subsection{Vergleich der Pulsformen}
+
+
+\autoref{fig:smooth} zeigt die Pulsformung bei ASK mit glatten Bitübergängen. Dabei werden die Signalflanken abgerundet, um die Signalbandbreite im Frequenzspektrum zu verringern. Im Gegensatz dazu ist in \autoref{fig:hard} die Pulsformung mit harten Bitübergängen dargestellt, bei der die Signalflanken abrupt wechseln und dadurch ein breiteres Spektrum erzeugen.
+
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../5_transmit_power/smooth.png}
+        \caption{Glatte Bitübergänge}
+        \label{fig:smooth}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../5_transmit_power/hard.png}
+        \caption{Harte Bitübergänge}
+        \label{fig:hard}
+    \end{subfigure}
+    \caption{ASK Pulsformung: (a) glatte Bitübergänge, (b) harte Bitübergänge}
+    \label{fig:ask_pulsformung}
 \end{figure}
