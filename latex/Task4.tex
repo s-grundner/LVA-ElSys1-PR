@@ -1,12 +1,12 @@
-\newpage
+\clearpage
+
 \section{RSSI Analyse}
 
 Die Signalstärke soll im dBm-Format über zwei Parameteränderungen (über Sendeleistung und Distanz) festgestellt werden. Im letzten Schritt wird die Distanzmessung mit der Friis-Gleichung abgeglichen.
 
-Zuerst muss verifiziert werden, dass die Umrechnung von RSSI zu dBm richtig erfolgt. Dazu werden Sender und Empfänger 1 m voneinander entfernt aufgestellt und der Sender über die \lstinline{pa_table} iteriert, wobei alle anderen Einstellungen gleich bleiben (siehe \autoref{sec:pa-table}).
+Zuerst muss verifiziert werden, dass die Umrechnung von RSSI zu dBm richtig erfolgt. Dazu werden Sender und Empfänger 1 m voneinander entfernt aufgestellt. Während der Sender über die \lstinline{pa_table} iteriert, wobei alle anderen Einstellungen gleich bleiben (siehe \autoref{lst:pa-table}).
 
-\label{sec:pa-table}
-\begin{lstlisting}[language=Python,caption={Sendevorgang über alle paTableIdx}]
+\begin{lstlisting}[language=Python,caption={Sendevorgang über alle paTableIdx}, label={lst:pa-table}]
 # --- Send Data ---
 
 data = [0xB3]
@@ -21,9 +21,6 @@ for paTableIdx in range(len(pa_table)):
         time.sleep(0.1)
 \end{lstlisting}
 
-
-Die mit dem in \autoref{sec:pa-table} gezeigten Code erzeugten Rohmesswerte ergeben in Abhängigkeit von der Sendeleistung die in \autoref{fig:rssi_gfsk_plot} gezeigten Rohdaten.
-
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.7\textwidth]{../4_rssi/plots/rssi_gfsk_plot.png}
@@ -33,7 +30,7 @@ Die mit dem in \autoref{sec:pa-table} gezeigten Code erzeugten Rohmesswerte erge
 
 \subsection{Umrechnung von RSSI in dBm}
 
-Mit der in \autoref{eq:rssi_umrechnung} dargestellten Formel wird die chipinterne Darstellung des RSSI-Wertes in dBm umgewandelt~\cite{TI_CC1101_Datasheet}.
+Die in \autoref{eq:rssi_umrechnung} dargestellten Formel wird die chipinterne Darstellung des RSSI-Wertes in dBm umgewandelt~\cite{TI_CC1101_Datasheet}.
 
 \begin{equation}
 \text{dBm} =
@@ -45,13 +42,11 @@ Mit der in \autoref{eq:rssi_umrechnung} dargestellten Formel wird die chipintern
 \end{equation}
 
 
-
-
 \subsection{Einfluss der Sendeleistung}
 
-Nach der Mittelung und dem gegenüberstellen von der jeweilig eingestellten Sendeleistung kann man in \autoref{fig:rssi_gfsk_plot_mean_dBm} sehen, das sich zwischen der Empfangsleistung und Sendeleistung, wie zu erwarten, ein lineares Verhältniss bildet. Da die distanz zwischen Sender und Empfangsmodul gleich bleibt ist ergibt sich eine konstante Dämpfung zwischen den beiden Modulen.
+Nach der Mittelung und dem gegenüberstellen von der jeweilig eingestellten Sendeleistung kann man in \autoref{fig:rssi_gfsk_plot_mean_dBm} sehen, das sich zwischen der Empfangsleistung und Sendeleistung, wie zu erwarten, ein lineares Verhältniss bildet. Da die Distanz zwischen Sender und Empfangsmodul gleich bleibt ist ergibt sich eine konstante Dämpfung zwischen den beiden Modulen.
 
-\begin{figure}[h!]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{../4_rssi/plots/rssi_gfsk_plot_mean_dBm.png}
     \caption{RSSI in Abhängigkeit von der Sendeleistung}
@@ -60,11 +55,29 @@ Nach der Mittelung und dem gegenüberstellen von der jeweilig eingestellten Send
 
 \subsection{Einfluss der Distanz}
 
-Im nächsten schritt wird nun nur die Distanz zwischen Sender und Empfänger verändert, in 2 Meter abschnitten wird der Empfänger innerhalb des Ganges positioniert und 10 RSSI Rohwerte pro Abstand aufgenommen. Dies wird bis auf eine Distanz von 15 Meter durchgeführt, die gemittelten dbm Werte werden nun der Friis gleichung im \autoref{fig:range_plot_mean_dBm_against_friis} gegeübergestellt.
+Als Nächstes wird nur die Distanz zwischen Sender und Empfänger verändert, in 2 Meter abschnitten wird der Empfänger innerhalb des Ganges positioniert und 10 RSSI Rohwerte pro Abstand aufgenommen. Dies wird bis auf eine Distanz von 15 Meter durchgeführt, die gemittelten dbm Werte werden nun der Friis Gleichung im \autoref{fig:range_plot_mean_dBm_against_friis} gegeübergestellt.
 
-\begin{figure}[h!]
+\subsection{Abgleich mit der Friis-Gleichung}
+
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{../4_rssi/plots/range_plot_mean_dBm_against_friis.png}
     \caption{RSSI in Abhängigkeit von der Distanz mit Friis-Gleichung}
     \label{fig:range_plot_mean_dBm_against_friis}
 \end{figure}
+
+Zum Vergleich der Distanzabhängigkeit wird die gemittelte Empfangsleistung (dBm) den Werten der Friis-Gleichung gegenübergestellt. Die Friis-Gleichung beschreibt im Freiraum die Kopplung zwischen Sende- und Empfangsantenne über die Wellenlänge~$\lambda$ und den Abstand~$d$:
+
+\begin{equation}
+\mathrm{FSPL}(d) = 20 \cdot \log_{10}\!\left(\frac{4\pi d}{\lambda}\right) \quad \text{[dB]}.
+\label{eq:fspl_friis}
+\end{equation}
+
+Für den Vergleich über verschiedene Distanzen wird das Offset $P_o$ auf die Messpunkte 5\,m, 7\,m und 9\,m gefittet. Damit ergibt sich für den erwarteten Leistungsverlauf im Freiraum:
+
+\begin{equation}
+P_r(d) = P_o - 20 \cdot \log_{10}(d) \quad \text{[dBm]},
+\label{eq:friis_fit}
+\end{equation}
+
+was dem $1/d^2$-Gesetz der freien Ausbreitung entspricht. Die Gegenüberstellung in \autoref{fig:range_plot_mean_dBm_against_friis} zeigt den erwarteten logarithmischen Abfall der Empfangsleistung mit wachsender Distanz.
