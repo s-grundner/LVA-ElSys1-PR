@@ -26,10 +26,10 @@ CC1101_433.setPARampingSteps(7)
 data = [0xB3]
 
 while True:
-  #  for i in range (10):
+#  for i in range (10):
     print(CC1101_433.sendData(data))
     time.sleep(0.1)
-   # break
+# break
 \end{lstlisting}
 
 Im Listing~\ref{lst:onboard_sender_soft_transition} ist die Implementierung der Soft Bit Transition im Python-Sender zu sehen.
@@ -37,7 +37,22 @@ Im Listing~\ref{lst:onboard_sender_soft_transition} ist die Implementierung der 
 
 \subsection{Aufbau des Empfängers}
 
-Wie in der \autoref{fig:task5_graph} dargestellt, wird das Signal nach der Tiefpassfilterung durch die „Complex to Magnitude“-Funktion in eine Amplitude umgewandelt und schließlich im „Time Sink“ im Zeitbereich dargestellt.
+Als Empfänger wird ein nicht-kohärenter ASK-Empfänger verwendet, der wie in \autoref{fig:ask_receiver} dargestellt aufgebaut ist.
+
+\begin{figure}[h]
+    \centering
+    \begin{circuitikz}[>=latex', transform shape, scale=0.9]
+        \draw (0,0) node[bareRXantenna](ant){} -- ++(0,-0.5) coordinate (aout) node[left]{$r_\mathrm{b}[k]\in\mathbb{C}$};
+        \node[above] at (ant.top){USRP};
+        \draw[->] (aout) |- ++(1,0) to[lowpass,>,l^=$f_\text{dev}$]
+            ++(1,0) to[twoport,>,align=center,l={Envelope\\Detector}, t={$(\cdot)^2$}]
+            ++(2,0) node[right]{$r[k]\in\mathbb{R}$};
+    \end{circuitikz}
+    \caption{Blockschaltbild eines nicht-kohärenten ASK Empfängers}\label{fig:ask_receiver}
+\end{figure}
+
+
+Wie in der \autoref{fig:task5_graph} dargestellt, wird das Signal nach der Tiefpassfilterung durch die \textit{Complex to Magnitude}-Funktion in eine Amplitude umgewandelt und schließlich im \textit{Time Sink} im Zeitbereich dargestellt.
 
 \begin{figure}[htbp]
     \centering

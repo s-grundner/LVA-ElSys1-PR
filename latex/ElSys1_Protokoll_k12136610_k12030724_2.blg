@@ -1,11 +1,13 @@
-This is BibTeX, Version 0.99d (TeX Live 2026/dev/Arch Linux)
+This is BibTeX, Version 0.99d
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
-The top-level auxiliary file: ElSys1_Protokoll_k12136610_2.aux
+The top-level auxiliary file: ElSys1_Protokoll_k12136610_k12030724_2.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
 The style file: plain.bst
+Reallocating 'name_of_file' (item size: 1) to 15 items.
 Database file #1: bib/references.bib
 You've used 1 entry,
             2118 wiz_defined-function locations,
-            503 strings with 4212 characters,
+            503 strings with 4232 characters,
 and the built_in function-call counts, 233 in all, are:
 = -- 21
 > -- 7

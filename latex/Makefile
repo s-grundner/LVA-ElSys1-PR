@@ -12,7 +12,7 @@
 # a pdflatex -> bibtex -> pdflatex* flow.
 
 # Main TeX source (change if you want a different main file)
-MAIN := ElSys1_Protokoll_k12136610_2.tex
+MAIN := ElSys1_Protokoll_k12136610_k12030724_2.tex
 OUT := $(MAIN:.tex=.pdf)
 
 # Tools (allow overriding on command line)
